@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mandate — agent authority console</title>
+    <meta
+      name="description"
+      content="An agent's budget is a contract balance and its reason is an attestation. Every figure here is a contract view."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <!-- Same mark as the header, inlined so the favicon needs no extra request. -->
+    <meta name="theme-color" content="#e9eef3" />
+    <meta name="color-scheme" content="light" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mandate" />
+    <meta property="og:title" content="Mandate — attested spending authority for agents" />
+    <meta
+      property="og:description"
+      content="A contract holds the budget, checks the allowlist and the ceilings, and refuses any spend whose decision hash does not match the attested hash. Every figure on the page is a contract view."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Mandate — attested spending authority for agents" />
+    <meta
+      name="twitter:description"
+      content="The budget is a contract balance; the reason is an attestation; a stale decision is refused with policy_changed."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Mandate console",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true,
+        "description": "A read-only console for a NEAR contract that enforces an agent's spending authority: funded balance, allowlist, ceilings, attested decisions bound to a policy revision."
+      }
+    </script>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%230f1720'/%3E%3Crect x='4.5' y='4.5' width='15' height='15' fill='none' stroke='%23f4f7fa' stroke-width='1.6'/%3E%3Ccircle cx='12' cy='11' r='2.4' fill='none' stroke='%23f4f7fa' stroke-width='1.6'/%3E%3Cpath d='M12 13.4v4.1' stroke='%23f4f7fa' stroke-width='1.6'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#canvas">Skip to the mandate record</a>
+
+    <div class="app">
+      <header class="context" role="banner">
+        <div class="wordmark">
+          <span class="mark" aria-hidden="true">
+            <!-- A keyhole inside a frame: authority with one door, not a letter. -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square">
+              <rect x="3" y="3" width="18" height="18" />
+              <circle cx="12" cy="10.4" r="2.5" />
+              <path d="M12 12.9v4.4" />
+            </svg>
+          </span>
+          <span>Mandate</span>
+        </div>
+        <!-- One bar: the wordmark, the sections and the four facts. There is no
+             second navigation row, so nothing competes with the sections. -->
+        <nav class="tabs" aria-label="Sections">
+          <a href="#/desk" data-route="desk">Desk</a>
+          <a href="#/mandate" data-route="mandate">Mandate</a>
+          <a href="#/verify" data-route="verify">Verify</a>
+          <a href="#/refusals" data-route="refusals">Refusals</a>
+          <a href="#/api" data-route="api">API</a>
+          <a href="#/paper" data-route="paper">Paper</a>
+          <a href="#/about" data-route="about">About</a>
+        </nav>
+        <!-- Provenance of this page, not navigation. One caption and three
+             facts in a single line, so it reads as a sentence about the build
+             instead of a second row of menu items. -->
+        <p class="ctx">
+          <span class="ctx-label">this build</span>
+          <span class="ctx-facts">
+            <span id="ctx-mode">—</span>
+            <span>on <span id="ctx-network">—</span></span>
+            <span>contract <code id="ctx-contract">—</code></span>
+            <span id="ctx-asset">—</span>
+          </span>
+        </p>
+      </header>
+
+      <main id="canvas" tabindex="-1" aria-labelledby="view-title">
+        <p class="eyebrow" id="view-eyebrow">record of authority</p>
+        <h1 id="view-title">Reading the contract…</h1>
+        <p class="lede" id="view-lede"></p>
+        <div id="view" aria-busy="true"></div>
+      </main>
+
+      <aside class="rail" aria-labelledby="rail-title">
+        <h2 id="rail-title" class="rail-title">Proof rail</h2>
+        <p class="rail-note">
+          Four stages, in order. A cell stays empty when its stage did not happen.
+        </p>
+        <ol class="rail-cells" id="rail" aria-live="off"></ol>
+        <p class="rail-foot" id="rail-foot"></p>
+      </aside>
+
+      <footer class="foot">
+        <p id="foot-left">testnet only · no mainnet funds</p>
+        <p id="foot-right">—</p>
+      </footer>
+    </div>
+
+    <p id="live" class="sr-only" role="status" aria-live="polite"></p>
+
+    <dialog id="help" aria-labelledby="help-title">
+      <h2 id="help-title">Keyboard</h2>
+      <dl class="keys">
+        <div><dt><kbd>d</kbd></dt><dd>Desk</dd></div>
+        <div><dt><kbd>m</kbd></dt><dd>Mandate</dd></div>
+        <div><dt><kbd>v</kbd></dt><dd>Verify</dd></div>
+        <div><dt><kbd>x</kbd></dt><dd>Refusals</dd></div>
+        <div><dt><kbd>c</kbd></dt><dd>Control plane (API and MCP)</dd></div>
+        <div><dt><kbd>w</kbd></dt><dd>Paper</dd></div>
+        <div><dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Previous / next event</dd></div>
+        <div><dt><kbd>p</kbd></dt><dd>Play or pause the replay</dd></div>
+        <div><dt><kbd>e</kbd></dt><dd>Export the current rows</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd>This list</dd></div>
+        <div><dt><kbd>esc</kbd></dt><dd>Close</dd></div>
+      </dl>
+      <form method="dialog"><button class="btn" type="submit">Close</button></form>
+    </dialog>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

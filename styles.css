@@ -1,0 +1,1227 @@
+/* Mandate console — one visual system, documented in docs/BRAND_GUIDELINES.md.
+   Instrument, not dashboard: ruled surfaces, 2px radius, no shadows, colour
+   never alone. Tokens below are copied from the brand file; do not edit one
+   without the other. */
+
+:root {
+  --paper: #e9eef3;
+  --paper-raised: #f4f7fa;
+  --ink: #0f1720;
+  --ink-muted: #55636f;
+  --rule: #c3cdd6;
+  --verified: #2e6f5e;
+  --quorum: #2b5f8a;
+  --pending: #a9660f;
+  --blocked: #a83a2c;
+  --r: 2px;
+  --gutter: 24px;
+  --max: 1200px;
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --step-0: 15px;
+  --step-1: 17px;
+  --step-2: 21px;
+  --step-3: 28px;
+  --step-4: 38px;
+  --step-5: 52px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The ruled ground: a surveyor's paper, drawn once, never animated. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(to right, rgba(15, 23, 32, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 32, 0.035) 1px, transparent 1px);
+  background-size: 80px 80px;
+  z-index: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 20;
+  background: var(--ink);
+  color: var(--paper-raised);
+  padding: 10px 14px;
+  border-radius: var(--r);
+  font-size: 13px;
+  transition: top 120ms ease-out;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 20px var(--gutter) 48px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-areas:
+    "context context"
+    "tabs tabs"
+    "canvas rail"
+    "foot foot";
+  gap: 0 var(--gutter);
+}
+
+/* ---------------------------------------------------------------- context bar */
+
+.context {
+  grid-area: context;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: var(--ink);
+}
+
+/* The provenance line: a caption plus one sentence. Values stay in lower case
+   so the eye never groups them with the upper-case section tabs above. */
+.ctx {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 0;
+  margin: 0;
+  max-width: 100%;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  color: var(--ink-muted);
+}
+
+.ctx-label {
+  margin-right: 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.ctx-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 18px;
+}
+
+.ctx-facts > span {
+  position: relative;
+}
+
+.ctx-facts > span + span::before {
+  content: "\00b7";
+  position: absolute;
+  left: -11px;
+}
+
+.ctx code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------- tabs */
+
+.tabs {
+  grid-area: tabs;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0 0 24px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tabs a {
+  display: inline-block;
+  padding: 10px 14px;
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tabs a:hover {
+  color: var(--ink);
+}
+
+.tabs a[aria-current="page"] {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+/* ---------------------------------------------------------------- canvas */
+
+main {
+  grid-area: canvas;
+  min-width: 0;
+}
+
+main:focus {
+  outline: none;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+.lede {
+  margin: 0 0 24px;
+  max-width: 66ch;
+  color: var(--ink-muted);
+  font-size: var(--step-1);
+}
+
+h2 {
+  margin: 32px 0 10px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+h3 {
+  margin: 0 0 6px;
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+
+.card {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 18px 20px;
+}
+
+.card + .card {
+  margin-top: 12px;
+}
+
+/* numbers ---------------------------------------------------------------- */
+
+.figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.figure .amount {
+  font-family: var(--font-display);
+  font-size: var(--step-5);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.figure .unit {
+  font-size: var(--step-1);
+  color: var(--ink-muted);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0;
+  /* Long refusal codes and hashes must break rather than push the page wide. */
+  overflow-wrap: anywhere;
+}
+
+.copy {
+  border: 0;
+  background: none;
+  padding: 0 2px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.copy:hover {
+  color: var(--ink);
+}
+
+/* stats strip ------------------------------------------------------------ */
+
+.strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin: 0 0 8px;
+}
+
+.strip div {
+  background: var(--paper-raised);
+  padding: 12px 14px;
+}
+
+.strip dt {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.strip dd {
+  margin: 4px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--step-1);
+  line-height: 1.35;
+}
+
+/* The note under a figure is a block, not a run-on: a span inherits inline
+   layout and collides with the number. */
+.strip dd .rail-sub {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/* The mark is drawn, not typed: a keyhole in a frame, so it cannot be mistaken
+   for a letterform and scales with the text around it. */
+.mark svg {
+  display: block;
+  width: 21px;
+  height: 21px;
+}
+
+/* paper route ------------------------------------------------------------ */
+
+.paper-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0 0 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.paper-toc a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.paper-toc a:hover {
+  border-bottom-color: var(--ink);
+}
+
+/* Markdown links keep the page's ink; the default blue would break the palette. */
+.paper a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.paper {
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Prose keeps a readable measure; figures get the whole column, because a
+   five-participant sequence diagram squeezed to 60 characters is unreadable. */
+.paper p,
+.paper li,
+.paper blockquote,
+.paper h2,
+.paper h3,
+.paper h4 {
+  max-width: 72ch;
+}
+
+.paper:last-child {
+  border-bottom: 0;
+}
+
+.paper h2,
+.paper h3,
+.paper h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.paper h2 {
+  font-size: var(--step-3);
+  margin: 28px 0 8px;
+}
+
+.paper h3 {
+  font-size: var(--step-2);
+  margin: 24px 0 6px;
+}
+
+.paper h4 {
+  font-size: var(--step-1);
+  margin: 20px 0 4px;
+}
+
+.paper p,
+.paper li {
+  max-width: 72ch;
+}
+
+.paper blockquote {
+  margin: 16px 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--ink);
+  color: var(--ink-muted);
+}
+
+.paper .code {
+  margin: 16px 0;
+  padding: 12px;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.paper .diagram {
+  margin: 16px 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--rule);
+  overflow-x: auto;
+}
+
+.paper .diagram:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.paper .diagram figcaption {
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+
+.paper .diagram pre {
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.paper .xref {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+/* Rendered diagrams: the picture leads, the source is one disclosure away. */
+.paper .diagram img {
+  display: block;
+  width: 100%;
+  min-width: 560px;
+  max-width: 1000px;
+  height: auto;
+  margin: 10px 0 6px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+}
+
+.paper .diagram details {
+  margin-top: 4px;
+}
+
+.paper .diagram summary {
+  color: var(--ink-muted);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* One masthead. The sections sit in the same bar as the wordmark, so there is
+   no second navigation row to interpret. */
+.context .tabs {
+  flex: 1 1 auto;
+  margin: 0;
+  border-bottom: 0;
+}
+
+.context .ctx {
+  flex: 0 1 auto;
+  justify-content: flex-end;
+}
+
+@media (max-width: 1100px) {
+  .context .ctx {
+    flex-basis: 100%;
+    order: 2;
+    justify-content: flex-start;
+  }
+
+  .context .tabs {
+    flex-basis: 100%;
+    order: 3;
+    margin-top: 2px;
+    padding-top: 4px;
+    border-top: 1px solid var(--rule);
+  }
+}
+
+/* Long identifiers in prose break instead of pushing the page wider than the
+   phone. Code blocks keep their own scrolling, so their lines stay intact. */
+.paper p code,
+.paper li code,
+.paper td code,
+.paper blockquote code,
+.paper figcaption code {
+  overflow-wrap: anywhere;
+}
+
+/* A four-column table cannot shrink below its content, so it scrolls inside its
+   own frame instead of widening the page at 380px. */
+.paper .table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.paper .table-wrap table {
+  min-width: 0;
+}
+
+/* In-page jumps are buttons, so they need the link styling explicitly. */
+.paper-toc .jump {
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.paper-toc .jump:hover {
+  border-bottom-color: var(--ink);
+}
+
+.paper-toc .jump:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* tables ----------------------------------------------------------------- */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+caption {
+  text-align: left;
+  padding: 12px 14px 0;
+  color: var(--ink-muted);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+thead th {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--ink-muted);
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+td.num,
+th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* states: glyph + word, never colour alone -------------------------------- */
+
+.state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.state .glyph {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.state[data-state="ok"] .glyph { color: var(--verified); }
+.state[data-state="flight"] .glyph { color: var(--quorum); }
+.state[data-state="warn"] .glyph { color: var(--pending); }
+.state[data-state="fail"] .glyph { color: var(--blocked); }
+.state[data-state="idle"] .glyph { color: var(--ink-muted); }
+
+/* buttons --------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 9px 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--paper-raised);
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule);
+}
+
+.btn.ghost:hover {
+  border-color: var(--ink);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+/* focus visibility everywhere ------------------------------------------- */
+
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--quorum);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+/* ---------------------------------------------------------------- timeline */
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--rule);
+}
+
+.timeline li {
+  position: relative;
+  padding: 0 0 2px 18px;
+}
+
+.timeline li::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 14px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--ink-muted);
+}
+
+.timeline li[data-current="true"]::before {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.timeline button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: baseline;
+  text-align: left;
+  padding: 9px 6px 9px 8px;
+  border: 0;
+  border-radius: var(--r);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.timeline button:hover {
+  background: var(--paper-raised);
+}
+
+.timeline .idx {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.timeline .what {
+  font-size: 13.5px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.timeline .what small {
+  display: block;
+  color: var(--ink-muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------------- rail */
+
+.rail {
+  grid-area: rail;
+  align-self: start;
+  position: sticky;
+  top: 16px;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 16px 16px 14px;
+}
+
+.rail-title {
+  margin: 0 0 4px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.rail-note {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+.rail-cells {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rail-cells li {
+  position: relative;
+  padding: 10px 0 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.rail-cells li:first-child {
+  border-top: 1px solid var(--ink-muted);
+}
+
+.rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rail-name {
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.rail-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.rail-sub {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.rail-cells li[data-state="ok"] {
+  border-left: 2px solid var(--verified);
+  padding-left: 10px;
+  margin-left: -12px;
+}
+
+.rail-cells li[data-state="fail"] {
+  border-left: 2px solid var(--blocked);
+  padding-left: 10px;
+  margin-left: -12px;
+}
+
+.rail-foot {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+
+/* the seal: a single rule drawn once when a stage completes */
+.rail-cells li[data-state="ok"] .rail-head::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--verified);
+  transform-origin: left center;
+  animation: seal 140ms ease-out both;
+}
+
+@keyframes seal {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ---------------------------------------------------------------- footer */
+
+.foot {
+  grid-area: foot;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-top: 32px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+}
+
+.foot p {
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- dialog */
+
+dialog {
+  border: 1px solid var(--ink);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+  color: var(--ink);
+  padding: 20px 22px;
+  max-width: 420px;
+}
+
+dialog::backdrop {
+  background: rgba(15, 23, 32, 0.4);
+}
+
+.keys {
+  margin: 0 0 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.keys div {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.keys dt {
+  min-width: 72px;
+  margin: 0;
+}
+
+.keys dd {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 2px;
+  padding: 1px 5px;
+  background: var(--paper);
+}
+
+/* ---------------------------------------------------------------- responsive */
+
+/* Below 960px the rail becomes a horizontal strip under the canvas, as the
+   brand file requires. No horizontal scrolling anywhere. */
+@media (max-width: 959px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "context"
+      "tabs"
+      "canvas"
+      "rail"
+      "foot";
+  }
+
+  .rail {
+    position: static;
+    margin-top: 28px;
+  }
+
+  .rail-cells {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+  }
+
+  .rail-cells li {
+    border-top: 1px solid var(--rule);
+  }
+
+  h1 {
+    font-size: var(--step-3);
+  }
+
+  .figure .amount {
+    font-size: var(--step-4);
+  }
+}
+
+@media (max-width: 560px) {
+  .app {
+    padding: 16px 16px 40px;
+  }
+
+  .rail-cells {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tabs a {
+    padding: 10px 10px;
+    font-size: 12px;
+  }
+}
+
+/* ---------------------------------------------------------------- motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0ms !important;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------- api */
+
+/* Code samples scroll inside their own box: at 380px the page must not. */
+.code {
+  margin: 12px 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: var(--paper, #f4f7fa);
+  border: 1px solid var(--rule, #cbd5e1);
+  border-radius: 2px;
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink, #0f1720);
+  white-space: pre;
+}
+
+#api-probe[data-state='ok'] {
+  color: var(--ok, #166534);
+}
+
+#api-probe[data-state='ok']::before,
+#api-probe[data-state='idle']::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: middle;
+}
+
+#api-probe[data-state='idle'] {
+  color: var(--muted, #526171);
+}
+
+/* ---------------------------------------------------------------- print */
+
+@media print {
+  body::before,
+  .tabs,
+  .actions,
+  .skip,
+  .copy,
+  dialog {
+    display: none !important;
+  }
+
+  .app {
+    display: block;
+    max-width: none;
+    padding: 0;
+  }
+
+  .card,
+  .rail,
+  table {
+    break-inside: avoid;
+  }
+
+  .rail {
+    position: static;
+    margin-top: 16px;
+    border-color: var(--ink);
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+}
+
+/* ---------------------------------------------------------------- filters */
+
+/* Fifteen events and twenty transactions need narrowing, not scrolling. The
+   chips carry their own count so the set is legible before it is filtered. */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 10px;
+}
+
+.filters .rail-sub {
+  margin: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--ink-muted);
+  color: var(--ink);
+}
+
+/* Pressed is a border, an ink change and a weight change, never colour alone;
+   the count stays visible in both states. */
+.chip[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.chip-n {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-muted);
+}
+
+.field {
+  min-height: 32px;
+  padding: 4px 8px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+/* chain runs ------------------------------------------------------------- */
+
+.run {
+  margin-top: 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  background: var(--paper-raised);
+}
+
+.run summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.run[open] summary {
+  border-bottom: 1px solid var(--rule);
+}
+
+.run-title {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.run-meta {
+  font-size: 11.5px;
+  color: var(--ink-muted);
+}
+
+.run .table-wrap {
+  border: 0;
+  border-radius: 0;
+}
+
+/* A filtered-out row leaves the layout entirely, including the timeline dot. */
+.timeline li[hidden],
+tr[hidden],
+details[hidden] {
+  display: none;
+}

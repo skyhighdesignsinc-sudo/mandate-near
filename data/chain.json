@@ -1,0 +1,260 @@
+{
+  "schema": 1,
+  "network": "testnet",
+  "contract": "mandate-hackaton-7c1a.testnet",
+  "attestor": "mandate-hackaton-7c1a.testnet",
+  "mandate": "m5",
+  "captured_at": "2026-11-06T22:49:54.861Z",
+  "block_height": 276548869,
+  "explorer": "https://testnet.nearblocks.io/address/mandate-hackaton-7c1a.testnet",
+  "verified": {
+    "chain": "base_sepolia",
+    "vendor": "0x9f2c55ac1d3e4b77a0c8f1d2e3b4a5c6d7e8f901",
+    "asset": "USDC",
+    "authorised_intent": "4e6f554758d1bd9945289fc48f6f8a2d355d0e7c59960c8e2e1c842920c65320",
+    "refused_code": "attestation_mismatch",
+    "settlement_ref": "base_sepolia:0x97b1328d86906b84104cc56d7f4b810075ad61eeda615a1d2e69be3af862052e"
+  },
+  "txs": [
+    {
+      "label": "create_mandate",
+      "hash": "4mjxGgVC58CVWdf3FZAvA5paHGHhmfu4nwamWVXzUsan",
+      "explorer": "https://testnet.nearblocks.io/txns/4mjxGgVC58CVWdf3FZAvA5paHGHhmfu4nwamWVXzUsan",
+      "outcome": "success"
+    },
+    {
+      "label": "spend authorised",
+      "hash": "5i8mGcuBTeyHtDP7cVcHFKtMQnJWvCs3q5enTheXgQLZ",
+      "explorer": "https://testnet.nearblocks.io/txns/5i8mGcuBTeyHtDP7cVcHFKtMQnJWvCs3q5enTheXgQLZ",
+      "outcome": "authorised"
+    },
+    {
+      "label": "spend refused",
+      "hash": "FcdypNU82KsJPBuvAe1n6yVFxCbJ7fS5yYLanp58eLFV",
+      "explorer": "https://testnet.nearblocks.io/txns/FcdypNU82KsJPBuvAe1n6yVFxCbJ7fS5yYLanp58eLFV",
+      "outcome": "refused",
+      "code": "attestation_mismatch"
+    },
+    {
+      "label": "settled",
+      "hash": "2U4wf3XUbxJu7435MDqHD29vipELkSPjRZhw8YtM6qJL",
+      "explorer": "https://testnet.nearblocks.io/txns/2U4wf3XUbxJu7435MDqHD29vipELkSPjRZhw8YtM6qJL",
+      "outcome": "settled"
+    }
+  ],
+  "views": {
+    "mandates": [
+      {
+        "id": "m1",
+        "owner": "mandate-hackaton-7c1a.testnet",
+        "agent": "agent.testnet",
+        "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "policy_rev": 1,
+        "asset": "USDC",
+        "balance": "100000000",
+        "spent_total": "0",
+        "spent_day": "0",
+        "day_index": 20763893286,
+        "suspended": false,
+        "per_tx": "30000000",
+        "per_day": "90000000",
+        "escalate_over": "15000000",
+        "expires_at_block": 0,
+        "require_attestation": true,
+        "chains": [
+          "base_sepolia"
+        ],
+        "settled_count": 0
+      },
+      {
+        "id": "m2",
+        "owner": "mandate-hackaton-7c1a.testnet",
+        "agent": "mandate-hackaton-7c1a.testnet",
+        "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "policy_rev": 1,
+        "asset": "USDC",
+        "balance": "75000000",
+        "spent_total": "25000000",
+        "spent_day": "13000000",
+        "day_index": 20763897163,
+        "suspended": false,
+        "per_tx": "30000000",
+        "per_day": "90000000",
+        "escalate_over": "15000000",
+        "expires_at_block": 0,
+        "require_attestation": true,
+        "chains": [
+          "base_sepolia"
+        ],
+        "settled_count": 2
+      },
+      {
+        "id": "m3",
+        "owner": "mandate-hackaton-7c1a.testnet",
+        "agent": "mandate-hackaton-7c1a.testnet",
+        "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "policy_rev": 1,
+        "asset": "USDC",
+        "balance": "88000000",
+        "spent_total": "12000000",
+        "spent_day": "12000000",
+        "day_index": 20763898990,
+        "suspended": false,
+        "per_tx": "30000000",
+        "per_day": "90000000",
+        "escalate_over": "15000000",
+        "expires_at_block": 0,
+        "require_attestation": true,
+        "chains": [
+          "base_sepolia"
+        ],
+        "settled_count": 0
+      },
+      {
+        "id": "m4",
+        "owner": "mandate-hackaton-7c1a.testnet",
+        "agent": "mandate-hackaton-7c1a.testnet",
+        "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "policy_rev": 1,
+        "asset": "USDC",
+        "balance": "88000000",
+        "spent_total": "12000000",
+        "spent_day": "12000000",
+        "day_index": 20763910227,
+        "suspended": false,
+        "per_tx": "30000000",
+        "per_day": "90000000",
+        "escalate_over": "15000000",
+        "expires_at_block": 0,
+        "require_attestation": true,
+        "chains": [
+          "base_sepolia"
+        ],
+        "settled_count": 1
+      },
+      {
+        "id": "m5",
+        "owner": "mandate-hackaton-7c1a.testnet",
+        "agent": "mandate-hackaton-7c1a.testnet",
+        "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "policy_rev": 1,
+        "asset": "USDC",
+        "balance": "88000000",
+        "spent_total": "12000000",
+        "spent_day": "12000000",
+        "day_index": 20763951075,
+        "suspended": false,
+        "per_tx": "30000000",
+        "per_day": "90000000",
+        "escalate_over": "15000000",
+        "expires_at_block": 0,
+        "require_attestation": true,
+        "chains": [
+          "base_sepolia"
+        ],
+        "settled_count": 1
+      }
+    ],
+    "stats": {
+      "total_mandates": 5,
+      "total_pending": 0,
+      "total_settled": 4,
+      "total_authorised": "61000000"
+    },
+    "held": "439000000",
+    "history": [
+      {
+        "rev": 1,
+        "hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "at_block": 276548819,
+        "per_tx": "30000000",
+        "per_day": "90000000",
+        "per_counterparty_day": "25000000",
+        "escalate_over": "15000000"
+      }
+    ],
+    "settlement": null
+  },
+  "runs": [
+    {
+      "at": "2026-11-06T21:51:05.457Z",
+      "block_height": 276542743,
+      "mandate": "m4",
+      "txs": [
+        {
+          "label": "create_mandate",
+          "hash": "7Km9VYd7ttZmk4vijgBxo9p1mzs5qLVAU8bSYPAnxjsv",
+          "explorer": "https://testnet.nearblocks.io/txns/7Km9VYd7ttZmk4vijgBxo9p1mzs5qLVAU8bSYPAnxjsv",
+          "outcome": "success"
+        },
+        {
+          "label": "spend authorised",
+          "hash": "9zrGsEUcTfTZ2uP11TTdAaqVC7xuY3dnxuifxpAsYCMc",
+          "explorer": "https://testnet.nearblocks.io/txns/9zrGsEUcTfTZ2uP11TTdAaqVC7xuY3dnxuifxpAsYCMc",
+          "outcome": "authorised"
+        },
+        {
+          "label": "spend refused",
+          "hash": "7LhShLj47ACJUksnSK3cMNMcgddQt4AgvNno3u1oF4cf",
+          "explorer": "https://testnet.nearblocks.io/txns/7LhShLj47ACJUksnSK3cMNMcgddQt4AgvNno3u1oF4cf",
+          "outcome": "refused",
+          "code": "attestation_mismatch"
+        },
+        {
+          "label": "settled",
+          "hash": "E48ugUE83LvzsWAaTsMyrghnoxHSBCMrZaf2GCtaUA4N",
+          "explorer": "https://testnet.nearblocks.io/txns/E48ugUE83LvzsWAaTsMyrghnoxHSBCMrZaf2GCtaUA4N",
+          "outcome": "settled"
+        }
+      ],
+      "verified": {
+        "chain": "base_sepolia",
+        "vendor": "0x9f2c55ac1d3e4b77a0c8f1d2e3b4a5c6d7e8f901",
+        "asset": "USDC",
+        "authorised_intent": "4e6f554758d1bd9945289fc48f6f8a2d355d0e7c59960c8e2e1c842920c65320",
+        "refused_code": "attestation_mismatch",
+        "settlement_ref": "base_sepolia:0x97b1328d86906b84104cc56d7f4b810075ad61eeda615a1d2e69be3af862052e"
+      }
+    },
+    {
+      "at": "2026-11-06T22:49:54.861Z",
+      "block_height": 276548869,
+      "mandate": "m5",
+      "txs": [
+        {
+          "label": "create_mandate",
+          "hash": "4mjxGgVC58CVWdf3FZAvA5paHGHhmfu4nwamWVXzUsan",
+          "explorer": "https://testnet.nearblocks.io/txns/4mjxGgVC58CVWdf3FZAvA5paHGHhmfu4nwamWVXzUsan",
+          "outcome": "success"
+        },
+        {
+          "label": "spend authorised",
+          "hash": "5i8mGcuBTeyHtDP7cVcHFKtMQnJWvCs3q5enTheXgQLZ",
+          "explorer": "https://testnet.nearblocks.io/txns/5i8mGcuBTeyHtDP7cVcHFKtMQnJWvCs3q5enTheXgQLZ",
+          "outcome": "authorised"
+        },
+        {
+          "label": "spend refused",
+          "hash": "FcdypNU82KsJPBuvAe1n6yVFxCbJ7fS5yYLanp58eLFV",
+          "explorer": "https://testnet.nearblocks.io/txns/FcdypNU82KsJPBuvAe1n6yVFxCbJ7fS5yYLanp58eLFV",
+          "outcome": "refused",
+          "code": "attestation_mismatch"
+        },
+        {
+          "label": "settled",
+          "hash": "2U4wf3XUbxJu7435MDqHD29vipELkSPjRZhw8YtM6qJL",
+          "explorer": "https://testnet.nearblocks.io/txns/2U4wf3XUbxJu7435MDqHD29vipELkSPjRZhw8YtM6qJL",
+          "outcome": "settled"
+        }
+      ],
+      "verified": {
+        "chain": "base_sepolia",
+        "vendor": "0x9f2c55ac1d3e4b77a0c8f1d2e3b4a5c6d7e8f901",
+        "asset": "USDC",
+        "authorised_intent": "4e6f554758d1bd9945289fc48f6f8a2d355d0e7c59960c8e2e1c842920c65320",
+        "refused_code": "attestation_mismatch",
+        "settlement_ref": "base_sepolia:0x97b1328d86906b84104cc56d7f4b810075ad61eeda615a1d2e69be3af862052e"
+      }
+    }
+  ]
+}
