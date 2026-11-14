@@ -464,3 +464,31 @@ non-ed25519 keys fixed it. `tools/attestor-demo.mjs` now passes 8/8 on `mig-mwgx
 a signed spend accepted and a moved signature and an unsigned record refused (`C31`). The live demo
 account leaves the key unset, so its spends remain hash-compared and log `attestation_unsigned`;
 that is the documented C24 mode, not the fixed one.
+
+## D-031 — 2026-11-14 — second-review fixes: pay the mandate owner, domain-separate signatures
+
+**What the second review got right.** `close_mandate` zeroed a balance and left the money in the
+contract's free pool, withdrawable only by the contract owner. For any mandate creator who is not
+the contract owner, closing destroyed their deposit. The signed attestation also had no domain: the
+message named the mandate but not the deployment, so one signature could be replayed on another
+account sharing an attestor key. And `tools/chain-demo.mjs` called `get_settlement({ intent })`
+without `id`, swallowed the panic, and committed a capture with no settlement while the chain had
+one.
+
+**Fixes.** `close_mandate` transfers the released balance to `mandate.owner` in the same receipt;
+`withdraw` is documented as the contract owner's residual only, bounded by storage and open
+balances. The signed message is `"<contract>|v1|mandate|<mandate>|<intent>|<decision>|<policy>|
+<code>|<quote>"`. The bare decision-hash check and write are gone — the state reset means no
+pre-D-028 mandate needs them, and keeping them let one mandate deny a hash on another. `chain-demo`
+passes `{ id, intent }`, polls until the settlement is visible, and refuses to write a capture whose
+settlement or `settled_count` is not there.
+
+**What it got wrong.** `check-docs` was reported red with eight broken references; it returns
+`OK — docs conformant` (51 files) on this tree. M-09 is not a defect in deployed code: the migration
+already ran, and the affected settlements are marked non-contestable. M-08 is bounded, not solved —
+no foreign-chain fetch exists, and none can.
+
+**Known limits after this.** Repeat mode in `baseline` still reuses mandates; only a UTC-day rollover
+is detected and skipped. The SCREENER now says exactly that instead of claiming more. M-05 makes a
+repeat purchase of the identical amount require a distinct intent, which this build does not mint —
+a nonce is the next design step.

@@ -99,6 +99,14 @@ contest-demo:
 intent-demo:
 	@$(NODE) tools/intent-demo.mjs $(ARGS)
 
+# M-01: the stranger attack, run for real and expected to be refused.
+probe-revoke:
+	@$(NODE) tools/probe-revoke.mjs $(ARGS)
+
+# M-03: register a key on a throwaway account and prove signed/refused spends.
+attestor-demo:
+	@$(NODE) tools/attestor-demo.mjs $(ARGS)
+
 # F-3: what the field's own published accounts hold — access keys, read-only.
 # The acceptance journeys, written as user goals rather than component checks.
 uat:

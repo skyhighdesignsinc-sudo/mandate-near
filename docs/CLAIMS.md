@@ -32,7 +32,7 @@
 | C27 | "Only the account named as the mandate's agent can request a spend; any other caller is refused with `unauthorized` and the balance does not move." | `spend` caller check in `mandate/contracts/mandate/src/lib.rs`; test `only_the_named_agent_can_request_a_spend` (asserts the refusal code and an unchanged balance). **No live transaction is cited**: the one recorded on 2026-11-13 was a locally computed id and does not resolve (`docs/AUDIT-2026-11-14.md` F-4). | D-025 |
 | C28 | "One intent authorises one debit: asking twice for the same chain, amount, vendor and asset is refused with `intent_consumed`, and the balance moves once." | guard in `spend` before the debit; live 2026-11-14 on build `3fb2f82fâ€¦`: `m114` create `H1ALmzSsâ€¦`, spend `21YT7eVmâ€¦`, second spend `7CcArdAPâ€¦` refused `intent_consumed`, `get_mandate` balance `9999999999000000` (one debit, not two) | D-028 |
 | C29 | "A foreign transaction reference settles one authorisation: recording the same reference against a second mandate is refused with `tx_replayed`." | used-set in `settle`; live on the same build: `m114` settle `8BPhv8vrâ€¦`, `m115` spend `9RVvuYRiâ€¦`, settle with the same reference `74hPPwd1â€¦` refused `tx_replayed` | D-028 |
-| C30 | "An owner can close a mandate, releasing its balance, and withdraw the part of the contract balance no open mandate reserves; a withdrawal above that free amount is refused with `balance_reserved`." | `close_mandate` and `withdraw`; live on the same build: close `X128ZuNoâ€¦` (balance released), withdraw `FNT9vHo8â€¦`, over-withdrawal `ZS3FuqsLâ€¦` refused `balance_reserved` | D-028 |
+| C30 | "Closing a mandate pays its balance to that mandate's owner in the same receipt; the contract owner can withdraw only the part of the account balance no open mandate reserves, and a withdrawal above that is refused with `balance_reserved`." | `close_mandate` and `withdraw`; live on the same build: close `X128ZuNoâ€¦` (balance released), withdraw `FNT9vHo8â€¦`, over-withdrawal `ZS3FuqsLâ€¦` refused `balance_reserved` | D-028 |
 | C26 | "A recorded settlement can be contested on chain inside a 100-block window with one of four reason codes and an evidence hash; the amount returns to the mandate's balance while the day's allowance stays spent; the same settlement cannot be contested twice." | `contest` in `mandate/contracts/mandate/src/lib.rs`; unit tests `contest_refunds_the_balance_and_records_the_reason`, `contest_after_the_window_is_refused`, `the_last_block_inside_the_window_still_contests`, `a_settlement_can_be_contested_once`, `a_contest_does_not_free_the_daily_ceiling`; live 2026-11-14 on build `d913321eâ€¦`: `H7oxeKpMâ€¦` (create) â†’ `2k6FiZG3â€¦` (spend) â†’ `Ld2v7yssâ€¦` (settle) â†’ `7ufoNHGRâ€¦` (contest, balance back to `1e18`, `spent_day` still `5`) â†’ `EweWtJu6â€¦` (second contest refused `already_contested`) | D-024, D-026, D-027 |
 | C24 | "The contract compares a hash; it does not verify the attestation's signature, so the worker is a trusted component in this build." | `mandate/contracts/mandate/src/policy.rs` header; `src/state.rs` line 74; `docs/ARCHITECTURE.md` trust model | code comment, not a claim of verification |
 
@@ -71,20 +71,22 @@ softened (`AGENTS.md` Â§7).
 | C2 | "The seizure is a threshold signature from an 11-of-17 network, not a keeper with a private key." | there is no seizure and no MPC request in this repo | a contract-initiated signature moves funds on a testnet, tx linked in `SCREENER.md` |
 | C3 | "No bridge, no wrapped asset, no oracle committee is used in this flow." | true of a flow we no longer ship; vacuous here | Pledge/Bond is rebuilt and deployed |
 | C9 | "Built on NEAR Chain Signatures, Read MPC, NEAR Intents and NEAR AI Cloud." | the contract calls none of them; the attestation is a hash comparison | one call to each primitive exists in the deployed code path |
-| C31 | "Once the owner registers an Ed25519 attestor key, `spend` accepts an attestation only if it carries a signature by that key over the mandate, intent, decision, policy and code hashes; a signature moved to another decision and an unsigned record are both refused with `attestation_mismatch`." | `check_attestation` + `set_attestor_key` in `mandate/contracts/mandate/src/lib.rs`; live 2026-11-14 on `mig-mwgxoq09.testnet` (throwaway account, same wasm `3ff5997b…`): deploy `2o7rBts4…`, reset `CvST2u4L…`, create `5eyRPgD9…`, key `6QSEtGvA…`, signed spend `8pkz6Jj7…`, moved signature `HaWYjNrw…` refused, unsigned `H6n6BbiF…` refused (8/8). The live demo account leaves the key unset, so its spends are hash-compared only and log `attestation_unsigned`. | D-029 |
+| C31 | "Once the owner registers an Ed25519 attestor key, `spend` accepts an attestation only if it carries a signature by that key over the contract account, a version tag, the mandate, intent, decision, policy and code hashes; a signature moved to another decision, replayed on another deployment, or missing is refused with `attestation_mismatch`." | `check_attestation` + `set_attestor_key` in `mandate/contracts/mandate/src/lib.rs`; live 2026-11-14 on `mig-mwgxoq09.testnet` (throwaway account, same wasm `3ff5997b…`): deploy `2o7rBts4…`, reset `CvST2u4L…`, create `5eyRPgD9…`, key `6QSEtGvA…`, signed spend `8pkz6Jj7…`, moved signature `HaWYjNrw…` refused, unsigned `H6n6BbiF…` refused (8/8). The live demo account leaves the key unset, so its spends are hash-compared only and log `attestation_unsigned`. | D-029 |
 
-### 1.3 Evidence after the D-030 reset (what the claims above now cite)
+### 1.3 Evidence after the second review (current deployment)
 
-The live account was reset on 2026-11-14 (`D-030`), so mandate ids from earlier runs are no longer
-in contract state; their transactions still resolve and remain listed above. These are the receipts
-on the current deployment (`wasm 3ff5997b…`, contract `mandate-hackaton-7c1a.testnet`):
+Contract `mandate-hackaton-7c1a.testnet`, wasm `b43a819c…`, state reset once (D-030) and recorded
+once. These are the receipts on that deployment; older ones above still resolve on chain but
+describe earlier builds.
 
 | Claim | Current receipts |
 |---|---|
-| C25 | `m1` — add key `2zDpzchP…`, `revoke_key` `9W78SMo9…`, `resume` `7Ld94SiK…`; `make key-demo` passes |
-| C26 | `m2` — create `3z9sJn8h…`, spend `BdH6kvvA…`, settle `8FPdzjfj…`, contest `GMxdGjtE…`, second contest `HTWhvW6v…` refused `already_contested` |
-| C28 / C29 / C30 | `m3`, `m4` — the run printed in `make intent-demo`: spend `2yYHSZsh…`, second spend `AmBYBbm9…` refused `intent_consumed`; settle `BjKFkzno…`, replay `H8urfrWk…` refused `tx_replayed`; close `BHUcq26y…`, withdraw `8qnz7eza…`, over-withdrawal `255FQ41b…` refused `balance_reserved` (9/9) |
-| C31 | `mig-mwgxoq09.testnet` — signed `8pkz6Jj7…` accepted; moved `HaWYjNrw…` and unsigned `H6n6BbiF…` refused (8/8) |
+| console run | `m1` — create `6B7DXZDX…`, spend `5d4FWXr4…`, refused `FdaRD96k…`, settle `nNzKHhwG…`; `settlement` and `settled_count: 1` are in `chain.json` |
+| C25 | `m1` — add `34q6NU8K…`, `revoke_key` `G2WP4KiJ…`, `resume` `Ep4yhzyx…`; `make key-demo` passes |
+| C26 | `m2` — create `G2tAddc8…`, spend `GxaQge7Y…`, settle `BFbzRWzU…`, contest `GJxpCQ3G…`, second contest `5yGEjivX…` refused `already_contested` |
+| C28 / C29 | `m3`/`m4` — spend `12j3FTmD…`, repeat `2FokB9fJ…` refused `intent_consumed`; settle `EJJnzbVW…`, replay `D7ZMTRvW…` refused `tx_replayed` (9/9) |
+| C30 | close `DeLqz1Q3…` pays the mandate owner; withdraw `CqQKFQx…`; over-withdrawal `Apo465rV…` refused `balance_reserved` |
+| C31 | `mig-mwgxoq09.testnet` — signed `DRMtpyVM…` accepted; moved `Dvm2kwcw…`, unsigned `68YVSruY…` refused (8/8) |
 
 ## 2. Claims we are NOT allowed to make (and what to say instead)
 

@@ -192,13 +192,31 @@ async function main() {
   txs.push({ label: 'settled', hash: settled.txHash, explorer: settled.explorer, outcome: 'settled' });
 
   // 5. Read the state back. Everything written below is a contract view.
-  const [mandates, stats, held, history, settlement] = await Promise.all([
-    viewCall(account, 'list_mandates'),
+  const [stats, held, history] = await Promise.all([
     viewCall(account, 'stats'),
     viewCall(account, 'held'),
     viewCall(account, 'get_policy_history', { id: mandate.id }),
-    viewCall(account, 'get_settlement', { intent }).catch(() => null),
   ]);
+  // `get_settlement` takes { id, intent }. Passing only the intent made the view
+  // panic and the old `.catch(() => null)` hid it, so the committed file recorded
+  // no settlement at all while the chain had one (second review). It is read after
+  // the others, with a poll: a `final` view can trail the receipt by a block, and
+  // "settlement missing" has to mean missing, not early.
+  let settlement = await viewCall(account, 'get_settlement', { id: mandate.id, intent });
+  for (let i = 0; i < 20 && (!settlement || settlement.tx_ref !== txRef); i += 1) {
+    await new Promise((r) => setTimeout(r, 500));
+    settlement = await viewCall(account, 'get_settlement', { id: mandate.id, intent });
+  }
+  if (!settlement || settlement.tx_ref !== txRef) {
+    throw new Fail('settlement_missing', `the chain does not return the settlement just written (${txRef})`);
+  }
+  // Read the mandate row after the settlement is visible: `settled_count` is part of
+  // that row, and reading it earlier recorded 0 next to a settlement that existed.
+  let mandates = await viewCall(account, 'list_mandates');
+  for (let i = 0; i < 20 && (mandates[0]?.settled_count ?? 0) < 1; i += 1) {
+    await new Promise((r) => setTimeout(r, 500));
+    mandates = await viewCall(account, 'list_mandates');
+  }
   const block = await rpc('block', { finality: 'final' });
 
   const capturedAt = new Date().toISOString();

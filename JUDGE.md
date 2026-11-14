@@ -31,7 +31,7 @@ The contest window was withdrawn on 2026-11-13 because its demo failed. Re-readi
 that it rewound the daily counter, which would have refilled a ceiling the product says it holds.
 Both were fixed, the contract was rebuilt and redeployed code-only (`7C2sALjW…`), and
 `make contest-demo` now passes on testnet: `m107`, spend `2k6FiZG3…`, settle `Ld2v7yss…`, contest
-`7ufoNHGR…` (balance back to `1e18`, `spent_day` still `5`), second contest `EweWtJu6…` refused
+`GJxpCQ3G…` (balance back to `1e18`, `spent_day` still `5`), second contest `EweWtJu6…` refused
 `already_contested`. **C26 is claimed again**, with that run as its evidence.
 
 The same review found a live key-deletion bug: `create_mandate` is permissionless, so any account
@@ -71,11 +71,11 @@ in `docs/UNIQUENESS-AUDIT.md` §4.4 and the full 1,098-entry census in §4.7.
 | Typed refusal code left in the failed receipt | common | yes, and the matrix exercises all 16 |
 | `settle` records a foreign tx reference | common | yes |
 | **Key deleted on revoke, not just paused** | **0 of 11** | yes, gate operator-only after the review (C25) |
-| **Contest window on a settled payment** | **0 names in 1,098** | yes, live `7ufoNHGR…` (C26) |
-| **The same intent cannot be debited twice** | not measured in that audit | yes, live `2yYHSZsh…` refused `intent_consumed` (C28) |
-| **One foreign tx reference settles one authorisation** | not measured in that audit | yes, live `H8urfrWk…` refused `tx_replayed` (C29) |
-| **Owner can close a mandate and withdraw the unreserved balance** | not measured in that audit | yes, live `BHUcq26y…`, `8qnz7eza…` (C30) |
-| **Attestation is signed, not just hashed, once a key is registered** | not measured in that audit | yes, live `8pkz6Jj7…` accepted; `HaWYjNrw…`, `H6n6BbiF…` refused (C31) |
+| **Contest window on a settled payment** | **0 names in 1,098** | yes, live `GJxpCQ3G…` (C26) |
+| **The same intent cannot be debited twice** | not measured in that audit | yes, live `12j3FTmD…` refused `intent_consumed` (C28) |
+| **One foreign tx reference settles one authorisation** | not measured in that audit | yes, live `D7ZMTRvW…` refused `tx_replayed` (C29) |
+| **Owner can close a mandate and withdraw the unreserved balance** | not measured in that audit | yes, live `DeLqz1Q3…`, `CqQKFQx…` (C30) |
+| **Attestation is signed, not just hashed, once a key is registered** | not measured in that audit | yes, live `DRMtpyVM…` accepted; `Dvm2kwcw…`, `68YVSruY…` refused (C31) |
 | Caller bound to the named agent | not claimed as unique | implemented, unit-tested (C27) |
 | Pre-flight dry run before signing | 1 of 11 (`agentshield`) | no |
 | Key expiry / lease | 1 of 11 (`leash-near`) | no |

@@ -747,14 +747,17 @@ impl Contract {
         snapshot
     }
 
-    /// Close a mandate and release its balance (M-02). Owner only.
+    /// Close a mandate and pay its balance to the mandate's owner (M-02). Owner only.
     ///
-    /// Until this existed, a deposit could only ever leave through `contest`, so
-    /// "the balance is yours" was true on the ledger and false in practice. Closing
-    /// sets the balance to zero and suspends the mandate: the funds stop being
-    /// reserved and become withdrawable below. It does not touch a settlement that
-    /// is still open — a mandate with a queued escalation must be rejected first,
-    /// because closing it would strand a request the agent is waiting on.
+    /// The second review caught the first version: it zeroed the balance and left the
+    /// money in the contract's free pool, which only the contract owner can withdraw.
+    /// For a permissionless mandate creator that meant closing destroyed their deposit.
+    /// The transfer is now part of the close, to `mandate.owner`, so the payer is paid
+    /// in the same receipt and no liability sits in global state.
+    ///
+    /// It does not touch a settlement that is still open — a mandate with a queued
+    /// escalation must be rejected first, because closing it would strand a request
+    /// the agent is waiting on.
     pub fn close_mandate(&mut self, id: MandateId) -> U128 {
         if self.pending.values().any(|p| p.mandate_id == id) {
             env::panic_str(&PolicyViolation::new("request_pending").to_string());
@@ -765,23 +768,26 @@ impl Contract {
         };
         assert_owner(mandate);
         let released = mandate.balance;
+        let paid_to = mandate.owner.clone();
         mandate.balance = 0;
         mandate.suspended = true;
+        let _ = Promise::new(paid_to.clone())
+            .transfer(near_sdk::NearToken::from_yoctonear(released));
         env::log_str(&format!(
-            "mandate_closed: id={} released={} owner={}",
-            id, released, mandate.owner
+            "mandate_closed: id={} released={} paid_to={}",
+            id, released, paid_to
         ));
         U128(released)
     }
 
     /// Pay the contract owner the part of the account balance that no mandate
-    /// reserves (M-02). Owner only.
+    /// reserves. Owner only.
     ///
-    /// Reserved means the sum of every open mandate's balance. Free means the
-    /// account balance minus storage stake minus that reserve, so a withdrawal can
-    /// never hand out money an agent could still be authorised to spend, and can
-    /// never push the account below its own storage. Close a mandate first to move
-    /// its balance from reserved to free.
+    /// This is **not** how a mandate owner gets paid: `close_mandate` transfers to
+    /// that mandate's owner directly. This method covers the contract's own residual
+    /// (faucet funds, rounding) and is bounded by the account balance minus storage
+    /// stake minus the sum of open balances, so it can never pay out money an agent
+    /// is still authorised to spend.
     pub fn withdraw(&mut self, amount: U128) -> U128 {
         if env::predecessor_account_id() != self.owner {
             env::panic_str(&PolicyViolation::new("owner_only").to_string());
@@ -983,8 +989,12 @@ fn check_attestation(
     // blamed the wrong caller. The bare key is still checked and still written,
     // because mandates created before this change recorded their decisions that
     // way and their history must keep blocking a replay.
+    // Scoped only. The first version also checked and wrote the bare hash for
+    // pre-D-028 mandates; the state was reset afterwards (D-030), so no such mandate
+    // exists, and keeping the bare key meant one mandate's decision could still deny
+    // the same hash on another (M-10, second review).
     let scoped = format!("{}|{}", mandate_id, att.decision_hash);
-    if used_decisions.contains_key(&scoped) || used_decisions.contains_key(&att.decision_hash) {
+    if used_decisions.contains_key(&scoped) {
         env::panic_str(&PolicyViolation::new("decision_replayed").to_string());
     }
     // The enclave recorded the intent it decided on. If the agent asks for a
@@ -1005,9 +1015,19 @@ fn check_attestation(
     // blob the caller hands over, so a valid signature cannot be moved to a
     // different mandate, intent or policy revision.
     if let Some(registered) = attestor_key {
+        // Domain-separated: the contract account and a version tag are inside the
+        // signed bytes, so a signature made for one deployment cannot be replayed on
+        // another that happens to share an attestor key and identical values
+        // (second review).
         let message = format!(
-            "{}|{}|{}|{}|{}|{}",
-            mandate_id, intent, att.decision_hash, att.policy_hash, att.code_hash, att.quote_hash
+            "{}|v1|mandate|{}|{}|{}|{}|{}|{}",
+            env::current_account_id(),
+            mandate_id,
+            intent,
+            att.decision_hash,
+            att.policy_hash,
+            att.code_hash,
+            att.quote_hash
         );
         let sig = att.signature.as_deref().and_then(hex64);
         let key = match registered.parse::<PublicKey>() {
@@ -1057,7 +1077,6 @@ fn check_attestation(
     }
 
     used_decisions.insert(scoped, true);
-    used_decisions.insert(att.decision_hash.clone(), true);
 }
 
 /// Decode exactly 64 bytes of hex. `None` for anything else, so a malformed

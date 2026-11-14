@@ -105,7 +105,8 @@ const amount = 1_000_000;
 const intent = createHash('sha256')
   .update(JSON.stringify({ amount: String(amount), asset: 'USDC', chain: 'base_sepolia', vendor }))
   .digest('hex');
-const message = (decision) => `${mandate[0].id}|${intent}|${decision}|${policyHash}|codehash|quotedemo`;
+const message = (decision) =>
+  `${account}|v1|mandate|${mandate[0].id}|${intent}|${decision}|${policyHash}|codehash|quotedemo`;
 
 const spendArgs = (decision, signature) => ({
   id: mandate[0].id,

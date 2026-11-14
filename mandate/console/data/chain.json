@@ -4,8 +4,8 @@
   "contract": "mandate-hackaton-7c1a.testnet",
   "attestor": "mandate-hackaton-7c1a.testnet",
   "mandate": "m1",
-  "captured_at": "2026-11-14T21:57:38.900Z",
-  "block_height": 277715468,
+  "captured_at": "2026-11-14T22:26:17.006Z",
+  "block_height": 277718404,
   "explorer": "https://testnet.nearblocks.io/address/mandate-hackaton-7c1a.testnet",
   "verified": {
     "chain": "base_sepolia",
@@ -18,27 +18,27 @@
   "txs": [
     {
       "label": "create_mandate",
-      "hash": "7N3ZSdog3cHZu51hJ4f7U5EAcKRLkf2UDGqfPxY67qR6",
-      "explorer": "https://testnet.nearblocks.io/txns/7N3ZSdog3cHZu51hJ4f7U5EAcKRLkf2UDGqfPxY67qR6",
+      "hash": "6B7DXZDXRD1WN38D9ngixAdD8dbv4PmV4tPghsnHASwi",
+      "explorer": "https://testnet.nearblocks.io/txns/6B7DXZDXRD1WN38D9ngixAdD8dbv4PmV4tPghsnHASwi",
       "outcome": "success"
     },
     {
       "label": "spend authorised",
-      "hash": "AJ8Q7LnQkfTRCsoVSM5xkz5hXLrMgHdJSN5mwFswg7RT",
-      "explorer": "https://testnet.nearblocks.io/txns/AJ8Q7LnQkfTRCsoVSM5xkz5hXLrMgHdJSN5mwFswg7RT",
+      "hash": "5d4FWXr4JxBHXqxmikbf1NHn1EhgJMBRsUtg3Tz8dD1u",
+      "explorer": "https://testnet.nearblocks.io/txns/5d4FWXr4JxBHXqxmikbf1NHn1EhgJMBRsUtg3Tz8dD1u",
       "outcome": "authorised"
     },
     {
       "label": "spend refused",
-      "hash": "6KdoUwaNnAGBvkjtFAjj5yeaAdDag8JHtW2HP2GUrQnF",
-      "explorer": "https://testnet.nearblocks.io/txns/6KdoUwaNnAGBvkjtFAjj5yeaAdDag8JHtW2HP2GUrQnF",
+      "hash": "FdaRD96kvzrEQEtvDetXbkDaoCxV8mHpE2nXXbi6nrfh",
+      "explorer": "https://testnet.nearblocks.io/txns/FdaRD96kvzrEQEtvDetXbkDaoCxV8mHpE2nXXbi6nrfh",
       "outcome": "refused",
       "code": "attestation_mismatch"
     },
     {
       "label": "settled",
-      "hash": "mv7MNgasqevXaecMeHyr2UqQMiLxtUUmonC3HXe7asZ",
-      "explorer": "https://testnet.nearblocks.io/txns/mv7MNgasqevXaecMeHyr2UqQMiLxtUUmonC3HXe7asZ",
+      "hash": "nNzKHhwGUmQJhkpjSJNEijg78LPUkAS5Kf3qGz8QoPy",
+      "explorer": "https://testnet.nearblocks.io/txns/nNzKHhwGUmQJhkpjSJNEijg78LPUkAS5Kf3qGz8QoPy",
       "outcome": "settled"
     }
   ],
@@ -64,7 +64,7 @@
         "chains": [
           "base_sepolia"
         ],
-        "settled_count": 0
+        "settled_count": 1
       }
     ],
     "stats": {
@@ -78,44 +78,50 @@
       {
         "rev": 1,
         "hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
-        "at_block": 277715458,
+        "at_block": 277718394,
         "per_tx": "30000000",
         "per_day": "90000000",
         "per_counterparty_day": "25000000",
         "escalate_over": "15000000"
       }
     ],
-    "settlement": null
+    "settlement": {
+      "tx_ref": "base_sepolia:0xb2aab3f8693f7e6ceb85f90e8e5e51345e4260e85a5152a100bb6c948696f08a",
+      "amount": 12000000,
+      "at_block": 277718404,
+      "contestable": true,
+      "contest": null
+    }
   },
   "runs": [
     {
-      "at": "2026-11-14T21:57:38.900Z",
-      "block_height": 277715468,
+      "at": "2026-11-14T22:26:17.006Z",
+      "block_height": 277718404,
       "mandate": "m1",
       "txs": [
         {
           "label": "create_mandate",
-          "hash": "7N3ZSdog3cHZu51hJ4f7U5EAcKRLkf2UDGqfPxY67qR6",
-          "explorer": "https://testnet.nearblocks.io/txns/7N3ZSdog3cHZu51hJ4f7U5EAcKRLkf2UDGqfPxY67qR6",
+          "hash": "6B7DXZDXRD1WN38D9ngixAdD8dbv4PmV4tPghsnHASwi",
+          "explorer": "https://testnet.nearblocks.io/txns/6B7DXZDXRD1WN38D9ngixAdD8dbv4PmV4tPghsnHASwi",
           "outcome": "success"
         },
         {
           "label": "spend authorised",
-          "hash": "AJ8Q7LnQkfTRCsoVSM5xkz5hXLrMgHdJSN5mwFswg7RT",
-          "explorer": "https://testnet.nearblocks.io/txns/AJ8Q7LnQkfTRCsoVSM5xkz5hXLrMgHdJSN5mwFswg7RT",
+          "hash": "5d4FWXr4JxBHXqxmikbf1NHn1EhgJMBRsUtg3Tz8dD1u",
+          "explorer": "https://testnet.nearblocks.io/txns/5d4FWXr4JxBHXqxmikbf1NHn1EhgJMBRsUtg3Tz8dD1u",
           "outcome": "authorised"
         },
         {
           "label": "spend refused",
-          "hash": "6KdoUwaNnAGBvkjtFAjj5yeaAdDag8JHtW2HP2GUrQnF",
-          "explorer": "https://testnet.nearblocks.io/txns/6KdoUwaNnAGBvkjtFAjj5yeaAdDag8JHtW2HP2GUrQnF",
+          "hash": "FdaRD96kvzrEQEtvDetXbkDaoCxV8mHpE2nXXbi6nrfh",
+          "explorer": "https://testnet.nearblocks.io/txns/FdaRD96kvzrEQEtvDetXbkDaoCxV8mHpE2nXXbi6nrfh",
           "outcome": "refused",
           "code": "attestation_mismatch"
         },
         {
           "label": "settled",
-          "hash": "mv7MNgasqevXaecMeHyr2UqQMiLxtUUmonC3HXe7asZ",
-          "explorer": "https://testnet.nearblocks.io/txns/mv7MNgasqevXaecMeHyr2UqQMiLxtUUmonC3HXe7asZ",
+          "hash": "nNzKHhwGUmQJhkpjSJNEijg78LPUkAS5Kf3qGz8QoPy",
+          "explorer": "https://testnet.nearblocks.io/txns/nNzKHhwGUmQJhkpjSJNEijg78LPUkAS5Kf3qGz8QoPy",
           "outcome": "settled"
         }
       ],
