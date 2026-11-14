@@ -224,11 +224,7 @@ export async function submit({ signerId, keyPair, receiverId, actionList, label,
   );
   const signature = new Signature({ keyType: publicKey.keyType, data: keyPair.sign(sha256(encodeTransaction(tx))).signature });
   const bytes = new SignedTransaction({ transaction: tx, signature }).encode();
-  const txHash = baseEncode(sha256(bytes));
-  const explorer = `${EXPLORER}/txns/${txHash}`;
-
-  say(`  ${label.padEnd(18)} ${txHash}`);
-  say(`  ${''.padEnd(18)} ${explorer}`);
+  const localHash = baseEncode(sha256(bytes));
 
   let outcome;
   try {
@@ -236,7 +232,24 @@ export async function submit({ signerId, keyPair, receiverId, actionList, label,
   } catch (err) {
     if (err.code !== 'rpc_timeout') throw err;
     say(`  ${''.padEnd(18)} broadcast is slow, polling for the receipt …`);
-    outcome = await waitForTx(txHash, signerId);
+    outcome = await waitForTx(localHash, signerId);
   }
+
+  // The id is what the chain says it is. A hash computed from our own borsh is
+  // only a candidate: the node re-serialises the transaction canonically before
+  // hashing, so the two can disagree while the call still succeeds. Recording the
+  // local value produced links that looked right and opened to nothing, which is
+  // exactly the failure this repository is not allowed to ship.
+  const body = outcome?.result ?? outcome;
+  const onChain = body?.transaction?.hash ?? body?.transaction_outcome?.id ?? null;
+  if (onChain && onChain !== localHash) {
+    say(`  ${''.padEnd(18)} id differs from the node, using the chain's: ${onChain}`);
+  }
+  const txHash = onChain ?? localHash;
+  const explorer = `${EXPLORER}/txns/${txHash}`;
+
+  say(`  ${label.padEnd(18)} ${txHash}`);
+  say(`  ${''.padEnd(18)} ${explorer}`);
+
   return { txHash, explorer, failure: extractFailure(outcome), outcome };
 }

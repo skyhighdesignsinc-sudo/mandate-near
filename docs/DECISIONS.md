@@ -298,7 +298,7 @@ was contested. Adding fields to a borsh-serialised struct means the 17 live mand
 then the migration and contract for B (six to ten hours), then console surface, demo and video.
 If B is not green by the buffer, A ships and B is recorded as unshipped — not half-deployed.
 `baseline` receives no further work in this window; its coverage work is closed as of
-`813e84f4af6a`.
+`11873d9d899d`.
 
 **What B may claim when it works, and nothing more.** A recorded authorisation can be
 contested on chain within 100 blocks with one of four reason codes; the amount returns to the
