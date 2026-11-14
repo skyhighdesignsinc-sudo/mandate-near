@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mandate — Audit (Agent Authority Console)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ground: '#E9EEF3',
+            surface: '#F4F7FA',
+            txprimary: '#0F1720',
+            txsecondary: '#55636F',
+            hairline: '#C3CDD6',
+            accVerif: '#2E6F5E',
+            accFlight: '#2B5F8A',
+            accHuman: '#A9660F',
+            accRefused: '#A83A2C',
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            sans: ['"Public Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '2px',
+            'sm': '2px',
+            'md': '2px',
+            'lg': '2px',
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      border-radius: 2px !important;
+    }
+    body {
+      background-color: #E9EEF3;
+      color: #0F1720;
+      font-family: 'Public Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      padding: 0;
+    }
+    .font-tabular {
+      font-variant-numeric: tabular-nums;
+    }
+    button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 2px solid #2B5F8A !important;
+      outline-offset: 1px !important;
+    }
+    .proof-cell {
+      border: 1px solid #C3CDD6;
+      background: #F4F7FA;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#2B5F8A]/20 selection:text-[#0F1720]">
+
+  <!-- Top Context Bar -->
+  <header class="w-full border-b border-hairline bg-surface/80 px-6 py-2.5">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between text-[13px] font-mono">
+      <div class="flex items-center space-x-3 text-txsecondary">
+        <span class="font-bold tracking-wider text-txprimary">MANDATE</span>
+        <span class="text-hairline">/</span>
+        <span class="px-1.5 py-0.5 border border-hairline bg-ground/50 text-[11px] text-txsecondary uppercase">testnet</span>
+        <span class="text-hairline">/</span>
+        <span>contract: <span class="text-txprimary font-semibold">mandate.testnet</span></span>
+        <span class="text-hairline">/</span>
+        <span class="flex items-center text-accVerif">
+          <span class="mr-1">✓</span> verification: RPC_QUORUM 3/3
+        </span>
+      </div>
+
+      <div class="flex items-center space-x-4 text-txsecondary">
+        <span>block: <span class="text-txprimary">#214,894,702</span></span>
+        <span class="text-hairline">/</span>
+        <span class="flex items-center">
+          <span>authority desk: <span class="text-txprimary">ed25519:9vK...8d1P</span></span>
+          <svg class="w-3.5 h-3.5 ml-1.5 text-txsecondary hover:text-txprimary cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="9" y="9" width="13" height="13" rx="0" stroke-width="1.75"/>
+            <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Area (12 columns, 1200px max, 24px gutter) -->
+  <main class="w-full flex-grow px-6 py-8">
+    <div class="max-w-[1200px] mx-auto">
+
+      <!-- Navigation & Document Subheading -->
+      <div class="flex items-center justify-between text-xs text-txsecondary font-mono mb-4">
+        <div class="flex items-center space-x-2">
+          <a href="#" class="hover:text-txprimary flex items-center transition-colors">
+            <span class="mr-1">←</span> All mandates
+          </a>
+          <span class="text-hairline">/</span>
+          <span class="text-txprimary">Audit record</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <span>instrument ref: <span class="text-txprimary font-semibold">MNDT-TN-4190</span></span>
+          <span class="text-hairline">·</span>
+          <span>ledger sequence: <span class="text-txprimary font-semibold">seq_0x9f18a2</span></span>
+        </div>
+      </div>
+
+      <!-- Title Section -->
+      <div class="mb-7 pb-4 border-b border-hairline">
+        <h1 class="font-serif text-[38px] font-medium text-txprimary tracking-tight leading-none mb-2">Audit</h1>
+        <p class="text-txsecondary text-[15px]">Every authorisation, every refusal, in order.</p>
+      </div>
+
+      <!-- 12-Column Grid: 8 cols Primary Canvas, 4 cols Proof Rail -->
+      <div class="grid grid-cols-12 gap-6 items-start">
+
+        <!-- PRIMARY CANVAS (Cols 1-8) -->
+        <div class="col-span-8 flex flex-col space-y-6">
+
+          <!-- Filter Bar -->
+          <div class="border border-hairline bg-surface p-3 flex items-center justify-between text-sm">
+            <div class="flex items-center space-x-2">
+              <!-- Date Range Chip -->
+              <div class="flex items-center border border-hairline bg-ground/50 px-2.5 py-1 text-xs font-mono text-txprimary">
+                <span class="text-txsecondary mr-1.5">DATE</span>
+                <span>01 Nov — 05 Nov</span>
+                <svg class="w-3 h-3 ml-1.5 text-txsecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+
+              <!-- Select Chip 1 -->
+              <div class="flex items-center border border-hairline bg-surface px-2.5 py-1 text-xs text-txprimary cursor-pointer hover:bg-ground/40 transition-colors">
+                <span>all agents</span>
+                <svg class="w-3 h-3 ml-1 text-txsecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+
+              <!-- Select Chip 2 -->
+              <div class="flex items-center border border-hairline bg-surface px-2.5 py-1 text-xs text-txprimary cursor-pointer hover:bg-ground/40 transition-colors">
+                <span>all results</span>
+                <svg class="w-3 h-3 ml-1 text-txsecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+
+              <!-- Select Chip 3 -->
+              <div class="flex items-center border border-hairline bg-surface px-2.5 py-1 text-xs text-txprimary cursor-pointer hover:bg-ground/40 transition-colors">
+                <span>all counterparties</span>
+                <svg class="w-3 h-3 ml-1 text-txsecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="font-mono text-xs text-txsecondary">
+              <span class="text-txprimary font-semibold">58</span> records
+            </div>
+          </div>
+
+          <!-- Dense Audit Table -->
+          <div class="border border-hairline bg-surface overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-hairline bg-ground/40 font-mono text-[11px] text-txsecondary uppercase tracking-wider">
+                  <th class="py-2.5 px-3 font-medium">BLOCK</th>
+                  <th class="py-2.5 px-2.5 font-medium">TIME</th>
+                  <th class="py-2.5 px-3 font-medium">AGENT</th>
+                  <th class="py-2.5 px-3 font-medium">COUNTERPARTY</th>
+                  <th class="py-2.5 px-3 text-right font-medium">AMOUNT</th>
+                  <th class="py-2.5 px-3 font-medium">RESULT</th>
+                  <th class="py-2.5 px-3 font-medium">DECISION HASH</th>
+                  <th class="py-2.5 px-2.5 font-medium text-center">SIGNERS</th>
+                  <th class="py-2.5 px-3 font-medium">SETTLE TX</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-hairline font-mono text-[12px]">
+
+                <!-- Row 1: Verified (Most Recent) -->
+                <tr class="hover:bg-ground/30 transition-colors">
+                  <td class="py-2.5 px-3 text-txprimary font-tabular">#214,894,702</td>
+                  <td class="py-2.5 px-2.5 text-txsecondary font-tabular">16:42:19</td>
+                  <td class="py-2.5 px-3 text-txprimary">loop.testnet</td>
+                  <td class="py-2.5 px-3 text-txprimary">northwind.near</td>
+                  <td class="py-2.5 px-3 text-right text-txprimary font-tabular font-medium">760.00 <span class="text-[10px] text-txsecondary">USDC</span></td>
+                  <td class="py-2.5 px-3 text-accVerif font-semibold">
+                    <span class="mr-1">✓</span>authorised
+                  </td>
+                  <td class="py-2.5 px-3 text-txsecondary flex items-center space-x-1">
+                    <span>0xbe44...17f0</span>
+                    <svg class="w-3 h-3 text-txsecondary hover:text-txprimary cursor-pointer inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                      <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                    </svg>
+                  </td>
+                  <td class="py-2.5 px-2.5 text-center text-txsecondary font-tabular">11/17</td>
+                  <td class="py-2.5 px-3 text-txsecondary">
+                    <span class="hover:text-txprimary cursor-pointer">0x9d31...0a44</span>
+                  </td>
+                </tr>
+
+                <!-- Row 2: Verified -->
+                <tr class="hover:bg-ground/30 transition-colors">
+                  <td class="py-2.5 px-3 text-txprimary font-tabular">#214,893,102</td>
+                  <td class="py-2.5 px-2.5 text-txsecondary font-tabular">14:02:40</td>
+                  <td class="py-2.5 px-3 text-txprimary">loop.testnet</td>
+                  <td class="py-2.5 px-3 text-txprimary">acme-freight.near</td>
+                  <td class="py-2.5 px-3 text-right text-txprimary font-tabular font-medium">240.00 <span class="text-[10px] text-txsecondary">USDC</span></td>
+                  <td class="py-2.5 px-3 text-accVerif font-semibold">
+                    <span class="mr-1">✓</span>authorised
+                  </td>
+                  <td class="py-2.5 px-3 text-txsecondary flex items-center space-x-1">
+                    <span>0x41ae...9c02</span>
+                    <svg class="w-3 h-3 text-txsecondary hover:text-txprimary cursor-pointer inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                      <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                    </svg>
+                  </td>
+                  <td class="py-2.5 px-2.5 text-center text-txsecondary font-tabular">11/17</td>
+                  <td class="py-2.5 px-3 text-txsecondary">
+                    <span class="hover:text-txprimary cursor-pointer">0x6a11...41bb</span>
+                  </td>
+                </tr>
+
+                <!-- Row 3: Refused (over_per_tx_cap) -->
+                <tr class="bg-accRefused/[0.03] hover:bg-accRefused/[0.06] transition-colors">
+                  <td class="py-2.5 px-3 text-txprimary font-tabular">#214,892,450</td>
+                  <td class="py-2.5 px-2.5 text-txsecondary font-tabular">12:18:05</td>
+                  <td class="py-2.5 px-3 text-txprimary">loop.testnet</td>
+                  <td class="py-2.5 px-3 text-txprimary">acme-freight.near</td>
+                  <td class="py-2.5 px-3 text-right text-accRefused font-tabular font-medium">320.00 <span class="text-[10px] text-txsecondary">USDC</span></td>
+                  <td class="py-2.5 px-3 text-accRefused font-medium">
+                    <span class="mr-1">✕</span>refused · over_per_tx_cap
+                  </td>
+                  <td class="py-2.5 px-3 text-txsecondary flex items-center space-x-1">
+                    <span>0x1f89...22aa</span>
+                    <svg class="w-3 h-3 text-txsecondary hover:text-txprimary cursor-pointer inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                      <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                    </svg>
+                  </td>
+                  <td class="py-2.5 px-2.5 text-center text-txsecondary font-tabular">—</td>
+                  <td class="py-2.5 px-3 text-txsecondary font-tabular">—</td>
+                </tr>
+
+                <!-- Row 4: Verified -->
+                <tr class="hover:bg-ground/30 transition-colors">
+                  <td class="py-2.5 px-3 text-txprimary font-tabular">#214,892,104</td>
+                  <td class="py-2.5 px-2.5 text-txsecondary font-tabular">11:47:33</td>
+                  <td class="py-2.5 px-3 text-txprimary">loop.testnet</td>
+                  <td class="py-2.5 px-3 text-txprimary">harbor-logistics.near</td>
+                  <td class="py-2.5 px-3 text-right text-txprimary font-tabular font-medium">180.00 <span class="text-[10px] text-txsecondary">USDC</span></td>
+                  <td class="py-2.5 px-3 text-accVerif font-semibold">
+                    <span class="mr-1">✓</span>authorised
+                  </td>
+                  <td class="py-2.5 px-3 text-txsecondary flex items-center space-x-1">
+                    <span>0x77b1...3f58</span>
+                    <svg class="w-3 h-3 text-txsecondary hover:text-txprimary cursor-pointer inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                      <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                    </svg>
+                  </td>
+                  <td class="py-2.5 px-2.5 text-center text-txsecondary font-tabular">11/17</td>
+                  <td class="py-2.5 px-3 text-txsecondary">
+                    <span class="hover:text-txprimary cursor-pointer">0x3f90...81dc</span>
+                  </td>
+                </tr>
+
+                <!-- Row 5: Refused (counterparty_not_allowed) -->
+                <tr class="bg-accRefused/[0.03] hover:bg-accRefused/[0.06] transition-colors">
+                  <td class="py-2.5 px-3 text-txprimary font-tabular">#214,891,776</td>
+                  <td class="py-2.5 px-2.5 text-txsecondary font-tabular">09:15:04</td>
+                  <td class="py-2.5 px-3 text-txprimary">loop.testnet</td>
+                  <td class="py-2.5 px-3 text-txprimary">byte-bazaar.testnet</td>
+                  <td class="py-2.5 px-3 text-right text-accRefused font-tabular font-medium">95.00 <span class="text-[10px] text-txsecondary">USDC</span></td>
+                  <td class="py-2.5 px-3 text-accRefused font-medium">
+                    <span class="mr-1">✕</span>refused · counterparty_not_allowed
+                  </td>
+                  <td class="py-2.5 px-3 text-txsecondary flex items-center space-x-1">
+                    <span>0x2c90...ae71</span>
+                    <svg class="w-3 h-3 text-txsecondary hover:text-txprimary cursor-pointer inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                      <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                    </svg>
+                  </td>
+                  <td class="py-2.5 px-2.5 text-center text-txsecondary font-tabular">—</td>
+                  <td class="py-2.5 px-3 text-txsecondary font-tabular">—</td>
+                </tr>
+
+                <!-- Row 6: Verified -->
+                <tr class="hover:bg-ground/30 transition-colors">
+                  <td class="py-2.5 px-3 text-txprimary font-tabular">#214,890,912</td>
+                  <td class="py-2.5 px-2.5 text-txsecondary font-tabular">08:30:11</td>
+                  <td class="py-2.5 px-3 text-txprimary">loop.testnet</td>
+                  <td class="py-2.5 px-3 text-txprimary">northwind.near</td>
+                  <td class="py-2.5 px-3 text-right text-txprimary font-tabular font-medium">60.00 <span class="text-[10px] text-txsecondary">USDC</span></td>
+                  <td class="py-2.5 px-3 text-accVerif font-semibold">
+                    <span class="mr-1">✓</span>authorised
+                  </td>
+                  <td class="py-2.5 px-3 text-txsecondary flex items-center space-x-1">
+                    <span>0x90a1...bc43</span>
+                    <svg class="w-3 h-3 text-txsecondary hover:text-txprimary cursor-pointer inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                      <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                    </svg>
+                  </td>
+                  <td class="py-2.5 px-2.5 text-center text-txsecondary font-tabular">11/17</td>
+                  <td class="py-2.5 px-3 text-txsecondary">
+                    <span class="hover:text-txprimary cursor-pointer">0x12dc...f990</span>
+                  </td>
+                </tr>
+
+                <!-- Row 7: Verified -->
+                <tr class="hover:bg-ground/30 transition-colors">
+                  <td class="py-2.5 px-3 text-txprimary font-tabular">#214,889,641</td>
+                  <td class="py-2.5 px-2.5 text-txsecondary font-tabular">06:11:58</td>
+                  <td class="py-2.5 px-3 text-txprimary">scout.testnet</td>
+                  <td class="py-2.5 px-3 text-txprimary">oracle-feed.near</td>
+                  <td class="py-2.5 px-3 text-right text-txprimary font-tabular font-medium">20.00 <span class="text-[10px] text-txsecondary">USDC</span></td>
+                  <td class="py-2.5 px-3 text-accVerif font-semibold">
+                    <span class="mr-1">✓</span>authorised
+                  </td>
+                  <td class="py-2.5 px-3 text-txsecondary flex items-center space-x-1">
+                    <span>0x5e20...11ac</span>
+                    <svg class="w-3 h-3 text-txsecondary hover:text-txprimary cursor-pointer inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                      <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                    </svg>
+                  </td>
+                  <td class="py-2.5 px-2.5 text-center text-txsecondary font-tabular">11/17</td>
+                  <td class="py-2.5 px-3 text-txsecondary">
+                    <span class="hover:text-txprimary cursor-pointer">0x74a0...00e1</span>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- "Verify this export" Panel -->
+          <div class="border border-hairline bg-surface p-5">
+            <div class="flex items-baseline justify-between mb-2">
+              <h2 class="text-xs font-mono font-semibold uppercase tracking-wider text-txprimary">Verify this export</h2>
+              <span class="text-[11px] font-mono text-txsecondary">IMMUTABLE ATTESTATION CHECK</span>
+            </div>
+
+            <p class="text-sm text-txsecondary mb-4 leading-relaxed">
+              Each row's decision hash can be recomputed from the attested payload, so the CSV is checkable without trusting this page.
+            </p>
+
+            <!-- Mono Hash / Proof Block -->
+            <div class="border border-hairline bg-ground/50 p-3 font-mono text-xs text-txprimary space-y-1 mb-5">
+              <div class="flex justify-between">
+                <span>sha256(export.csv) = <span class="font-semibold text-txprimary">0x7d023a89e1f409c31409ab448e9102c118</span></span>
+                <span class="text-txsecondary text-[11px]">sha256sum</span>
+              </div>
+              <div class="text-txsecondary">records <span class="text-txprimary font-semibold font-tabular">58</span></div>
+              <div class="text-accVerif font-semibold flex items-center">
+                <span class="mr-1">✓</span> recomputed 58/58 match
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center space-x-3">
+              <button class="px-4 py-2 bg-txprimary hover:bg-[#0F1720] text-surface font-sans text-sm font-medium transition-colors border border-txprimary flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Download CSV
+              </button>
+              <button class="px-4 py-2 bg-surface hover:bg-ground/60 text-txprimary font-sans text-sm font-medium border border-hairline transition-colors flex items-center">
+                <svg class="w-4 h-4 mr-2 text-txsecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Recompute hashes
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PROOF RAIL (Cols 9-12, minimum 320px) -->
+        <aside class="col-span-4 flex flex-col space-y-4">
+
+          <div class="border border-hairline bg-surface p-4">
+
+            <!-- Proof Rail Header -->
+            <div class="flex items-start justify-between pb-3 mb-3 border-b border-hairline">
+              <div>
+                <div class="text-[11px] font-mono font-bold uppercase tracking-wider text-txprimary">PROOF RAIL</div>
+                <div class="text-[11px] font-mono text-txsecondary">Most recent authorisation sequence</div>
+              </div>
+              <span class="px-1.5 py-0.5 border border-accVerif text-accVerif text-[10px] font-mono font-semibold uppercase">
+                SETTLED
+              </span>
+            </div>
+
+            <!-- 4 Stacked Verification Cells -->
+            <div class="space-y-2.5 mb-4">
+
+              <!-- 1 READ: verified -->
+              <div class="proof-cell p-3">
+                <div class="flex items-center justify-between text-xs font-mono mb-1.5">
+                  <span class="font-bold text-txprimary">1 READ</span>
+                  <span class="text-accVerif font-semibold flex items-center">
+                    <span class="mr-1">✓</span> verified
+                  </span>
+                </div>
+                <div class="text-[11px] font-mono text-txsecondary mb-1">3 of 3 RPCs</div>
+                <div class="flex items-center justify-between border border-hairline bg-ground/40 px-2 py-1 font-mono text-xs text-txprimary">
+                  <span>0x8f2c...41ae</span>
+                  <svg class="w-3.5 h-3.5 text-txsecondary hover:text-txprimary cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                    <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- 2 ATTEST: verified -->
+              <div class="proof-cell p-3">
+                <div class="flex items-center justify-between text-xs font-mono mb-1.5">
+                  <span class="font-bold text-txprimary">2 ATTEST</span>
+                  <span class="text-accVerif font-semibold flex items-center">
+                    <span class="mr-1">✓</span> verified
+                  </span>
+                </div>
+                <div class="text-[11px] font-mono text-txsecondary mb-1">code hash</div>
+                <div class="flex items-center justify-between border border-hairline bg-ground/40 px-2 py-1 font-mono text-xs text-txprimary">
+                  <span>0x1c77...de19</span>
+                  <svg class="w-3.5 h-3.5 text-txsecondary hover:text-txprimary cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                    <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- 3 SIGN: verified -->
+              <div class="proof-cell p-3">
+                <div class="flex items-center justify-between text-xs font-mono mb-1.5">
+                  <span class="font-bold text-txprimary">3 SIGN</span>
+                  <span class="text-accVerif font-semibold flex items-center">
+                    <span class="mr-1">✓</span> verified
+                  </span>
+                </div>
+                <div class="text-[11px] font-mono text-txsecondary mb-1">11 of 17</div>
+                <div class="flex items-center justify-between border border-hairline bg-ground/40 px-2 py-1 font-mono text-xs text-txprimary">
+                  <span>sig ref: 0x5b0e...77c1</span>
+                  <svg class="w-3.5 h-3.5 text-txsecondary hover:text-txprimary cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                    <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- 4 SETTLE: verified -->
+              <div class="proof-cell p-3">
+                <div class="flex items-center justify-between text-xs font-mono mb-1.5">
+                  <span class="font-bold text-txprimary">4 SETTLE</span>
+                  <span class="text-accVerif font-semibold flex items-center">
+                    <span class="mr-1">✓</span> verified
+                  </span>
+                </div>
+                <div class="text-[11px] font-mono text-txsecondary mb-1">near-testnet</div>
+                <div class="flex items-center justify-between border border-hairline bg-ground/40 px-2 py-1 font-mono text-xs text-txprimary">
+                  <span>tx: 0x9d31...0a44</span>
+                  <svg class="w-3.5 h-3.5 text-txsecondary hover:text-txprimary cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="9" y="9" width="13" height="13" stroke-width="1.75"/>
+                    <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke-width="1.75"/>
+                  </svg>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Meta Parameters under proof rail -->
+            <div class="pt-3 border-t border-hairline space-y-2 text-[11px] font-mono">
+              <div class="flex justify-between">
+                <span class="text-txsecondary">DISPUTE WINDOW:</span>
+                <span class="text-txprimary font-semibold font-tabular">0 BLOCKS REMAINING</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-txsecondary">COMMITMENT ROOT:</span>
+                <span class="text-txprimary">0xbe44...17f0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-txsecondary">NOTARIAL SEAL:</span>
+                <span class="text-txprimary">#9412-TN</span>
+              </div>
+              <div class="flex justify-between items-center pt-1 border-t border-hairline/60">
+                <span class="text-txsecondary">VERIFIER STATUS:</span>
+                <span class="text-accVerif font-semibold flex items-center">
+                  <span class="w-2 h-2 rounded-full bg-accVerif inline-block mr-1.5"></span>
+                  POLLING RELAY
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Chain of Custody Note -->
+          <div class="border border-hairline bg-surface p-4 text-[12px]">
+            <div class="flex items-baseline justify-between mb-1.5 font-mono text-[11px]">
+              <span class="font-bold text-txprimary uppercase tracking-wider">CHAIN OF CUSTODY NOTE</span>
+              <span class="text-txsecondary">NEP-413</span>
+            </div>
+            <p class="text-txsecondary leading-relaxed">
+              Every spend decision commits on-chain prior to threshold signature generation. Non-matching decision hashes prevent enclave key release automatically.
+            </p>
+          </div>
+
+        </aside>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footnote & Keyboard Hint Footer Strip -->
+  <footer class="w-full border-t border-hairline bg-surface/90 px-6 py-2.5">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between text-xs font-mono text-txsecondary">
+      <div class="flex items-center space-x-2">
+        <span>active path: <span class="text-txprimary font-semibold">RPC_QUORUM</span></span>
+        <span class="text-hairline">·</span>
+        <span>no mainnet</span>
+        <span class="text-hairline">·</span>
+        <span class="text-accHuman font-semibold">testnet only</span>
+      </div>
+
+      <!-- 4-item keyboard hint row -->
+      <div class="flex items-center space-x-4">
+        <span class="flex items-center">
+          <kbd class="px-1.5 py-0.5 border border-hairline bg-ground/60 text-[10px] text-txprimary mr-1.5 font-mono">D</kbd>
+          <span>download csv</span>
+        </span>
+        <span class="flex items-center">
+          <kbd class="px-1.5 py-0.5 border border-hairline bg-ground/60 text-[10px] text-txprimary mr-1.5 font-mono">R</kbd>
+          <span>recompute</span>
+        </span>
+        <span class="flex items-center">
+          <kbd class="px-1.5 py-0.5 border border-hairline bg-ground/60 text-[10px] text-txprimary mr-1.5 font-mono">/</kbd>
+          <span>search records</span>
+        </span>
+        <span class="flex items-center">
+          <kbd class="px-1.5 py-0.5 border border-hairline bg-ground/60 text-[10px] text-txprimary mr-1.5 font-mono">ESC</kbd>
+          <span>back to list</span>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

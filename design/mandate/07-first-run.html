@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mandate — Agent Authority Console (Empty State)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ground: '#E9EEF3',
+          panel: '#F4F7FA',
+          'text-primary': '#0F1720',
+          'text-secondary': '#55636F',
+          hairline: '#C3CDD6',
+          'accent-verified': '#2E6F5E',
+          'accent-inflight': '#2B5F8A',
+          'accent-human': '#A9660F',
+          'accent-refused': '#A83A2C',
+        },
+        fontFamily: {
+          serif: ['Fraunces', 'serif'],
+          sans: ['Public Sans', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+        borderRadius: {
+          custom: '2px',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * {
+    box-sizing: border-box;
+    border-radius: 2px !important;
+  }
+  body {
+    background-color: #E9EEF3;
+    color: #0F1720;
+    font-family: 'Public Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  .border-hairline {
+    border-color: #C3CDD6;
+  }
+  a:focus, button:focus, input:focus {
+    outline: 2px solid #2B5F8A;
+    outline-offset: 1px;
+  }
+</style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-[#C3CDD6] selection:text-[#0F1720]">
+
+  <!-- CONTEXT BAR -->
+  <header class="w-full bg-[#E9EEF3] border-b border-[#C3CDD6] px-6 py-2.5 text-xs font-mono tracking-tight text-[#55636F]">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="font-bold text-[#0F1720] tracking-wider uppercase text-[13px]">MANDATE</span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span class="bg-[#F4F7FA] border border-[#C3CDD6] px-1.5 py-0.5 uppercase tracking-wider text-[11px] text-[#0F1720]">TESTNET</span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span>contract: <strong class="font-mono font-medium text-[#0F1720]">mandate.testnet</strong></span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span class="text-[#2E6F5E] flex items-center gap-1 font-mono">
+          <span>✓</span> verification: RPC_QUORUM 3/3
+        </span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>block: <strong class="font-mono font-normal text-[#0F1720]">#214,895,014</strong></span>
+        <span class="text-[#C3CDD6]">/</span>
+        <div class="flex items-center space-x-1.5">
+          <span>authority desk:</span>
+          <span class="font-mono text-[#0F1720]">ed25519:9vK...8d1P</span>
+          <button title="Copy address" class="text-[#55636F] hover:text-[#0F1720] p-0.5">
+            <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT -->
+  <main class="flex-1 w-full max-w-[1200px] mx-auto px-6 pt-7 pb-10">
+    
+    <!-- PAGE HEADER -->
+    <div class="flex items-baseline justify-between mb-7 border-b border-[#C3CDD6] pb-4">
+      <div>
+        <h1 class="font-serif text-[38px] leading-tight font-semibold tracking-tight text-[#0F1720] mb-1">
+          Mandates
+        </h1>
+        <p class="text-[#55636F] text-[15px]">
+          No agent holds authority on this contract yet.
+        </p>
+      </div>
+      <div class="text-right font-mono text-xs text-[#55636F]">
+        <div>instrument ref: <span class="text-[#0F1720]">MNDT-TN-0000</span></div>
+        <div class="mt-0.5">registry status: <span class="text-[#55636F]">uninitialised</span></div>
+      </div>
+    </div>
+
+    <!-- 12-COLUMN GRID (8 COL CANVAS / 4 COL PROOF RAIL) -->
+    <div class="grid grid-cols-12 gap-6 items-start">
+      
+      <!-- PRIMARY CANVAS (8 COLUMNS) -->
+      <div class="col-span-8 space-y-6">
+
+        <!-- SETUP INVENTORY & SCHEMATIC PANEL -->
+        <div class="bg-[#F4F7FA] border border-[#C3CDD6]">
+          <div class="px-5 py-3 border-b border-[#C3CDD6] flex justify-between items-center bg-[#F4F7FA]">
+            <span class="font-mono text-xs uppercase tracking-wider text-[#55636F] font-semibold">
+              AUTHORITY ONBOARDING SEQUENCE
+            </span>
+            <span class="font-mono text-xs text-[#55636F]">
+              4 mandatory assertions
+            </span>
+          </div>
+
+          <!-- SPLIT: STEPS (LEFT) + RULED MEASUREMENT SCHEMATIC (RIGHT) -->
+          <div class="grid grid-cols-12 border-b border-[#C3CDD6]">
+            
+            <!-- NUMBERED SETUP STEPS (7 COLS OF INNER GRID) -->
+            <div class="col-span-7 border-r border-[#C3CDD6] divide-y divide-[#C3CDD6]">
+              
+              <!-- STEP 1 -->
+              <div class="p-4 flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="font-mono font-bold text-xs bg-[#E9EEF3] border border-[#C3CDD6] w-5 h-5 flex items-center justify-center text-[#0F1720] flex-shrink-0 mt-0.5">1</span>
+                  <div>
+                    <div class="font-medium text-[#0F1720] text-[15px]">Create the mandate</div>
+                    <div class="font-mono text-xs text-[#55636F] mt-1 leading-relaxed">
+                      agent account, per-transaction cap, daily cap, allowlist
+                    </div>
+                  </div>
+                </div>
+                <div class="font-mono text-base text-[#55636F] px-1 flex-shrink-0">—</div>
+              </div>
+
+              <!-- STEP 2 -->
+              <div class="p-4 flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="font-mono font-bold text-xs bg-[#E9EEF3] border border-[#C3CDD6] w-5 h-5 flex items-center justify-center text-[#0F1720] flex-shrink-0 mt-0.5">2</span>
+                  <div>
+                    <div class="font-medium text-[#0F1720] text-[15px]">Fund it</div>
+                    <div class="font-mono text-xs text-[#55636F] mt-1 leading-relaxed">
+                      a funded balance per chain — the budget is money that exists, not a number the contract compares against
+                    </div>
+                  </div>
+                </div>
+                <div class="font-mono text-base text-[#55636F] px-1 flex-shrink-0">—</div>
+              </div>
+
+              <!-- STEP 3 -->
+              <div class="p-4 flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="font-mono font-bold text-xs bg-[#E9EEF3] border border-[#C3CDD6] w-5 h-5 flex items-center justify-center text-[#0F1720] flex-shrink-0 mt-0.5">3</span>
+                  <div>
+                    <div class="font-medium text-[#0F1720] text-[15px]">Grant a spend-only key</div>
+                    <div class="font-mono text-xs text-[#55636F] mt-1 leading-relaxed">
+                      function-call access, receiver this contract, method spend
+                    </div>
+                  </div>
+                </div>
+                <div class="font-mono text-base text-[#55636F] px-1 flex-shrink-0">—</div>
+              </div>
+
+              <!-- STEP 4 -->
+              <div class="p-4 flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="font-mono font-bold text-xs bg-[#E9EEF3] border border-[#C3CDD6] w-5 h-5 flex items-center justify-center text-[#0F1720] flex-shrink-0 mt-0.5">4</span>
+                  <div>
+                    <div class="font-medium text-[#0F1720] text-[15px]">Watch the proof rail fill</div>
+                    <div class="font-mono text-xs text-[#55636F] mt-1 leading-relaxed">
+                      read, attest, threshold mpc sign, settlement on near-testnet
+                    </div>
+                  </div>
+                </div>
+                <div class="font-mono text-base text-[#55636F] px-1 flex-shrink-0">—</div>
+              </div>
+
+            </div>
+
+            <!-- RIGHT SIDE ILLUSTRATION: RULED REGISTER / SURVEY GRID (5 COLS) -->
+            <div class="col-span-5 p-5 bg-[#E9EEF3] flex flex-col justify-between select-none">
+              <div>
+                <div class="flex items-center justify-between text-[11px] font-mono text-[#55636F] uppercase tracking-wider mb-2">
+                  <span>Ledger Grid [Null]</span>
+                  <span>Sheet 00</span>
+                </div>
+
+                <!-- Precise hairline instrument graphic -->
+                <div class="relative w-full h-[180px] border border-[#C3CDD6] bg-[#F4F7FA] overflow-hidden p-2 flex flex-col justify-between">
+                  <!-- Ruled grid lines -->
+                  <div class="absolute inset-0 grid grid-cols-6 grid-rows-6 pointer-events-none opacity-40">
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-b border-[#C3CDD6]"></div>
+                    
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-b border-[#C3CDD6]"></div>
+
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-b border-[#C3CDD6]"></div>
+
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-b border-[#C3CDD6]"></div>
+
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-r border-b border-[#C3CDD6]"></div>
+                    <div class="border-b border-[#C3CDD6]"></div>
+
+                    <div class="border-r border-[#C3CDD6]"></div>
+                    <div class="border-r border-[#C3CDD6]"></div>
+                    <div class="border-r border-[#C3CDD6]"></div>
+                    <div class="border-r border-[#C3CDD6]"></div>
+                    <div class="border-r border-[#C3CDD6]"></div>
+                    <div></div>
+                  </div>
+
+                  <!-- Single measured line with ticks -->
+                  <div class="relative z-10 pt-2 flex justify-between items-center text-[10px] font-mono text-[#55636F]">
+                    <span>0.00 USDC</span>
+                    <span>T-00:00:00</span>
+                  </div>
+
+                  <div class="relative z-10 w-full my-auto">
+                    <div class="w-full h-px bg-[#0F1720] relative">
+                      <!-- Start tick -->
+                      <div class="absolute -top-1.5 left-0 w-px h-3 bg-[#0F1720]"></div>
+                      <!-- Reference markers -->
+                      <div class="absolute -top-1 left-1/4 w-px h-2 bg-[#55636F]"></div>
+                      <div class="absolute -top-1 left-2/4 w-px h-2 bg-[#55636F]"></div>
+                      <div class="absolute -top-1 left-3/4 w-px h-2 bg-[#55636F]"></div>
+                      <!-- End tick -->
+                      <div class="absolute -top-1.5 right-0 w-px h-3 bg-[#0F1720]"></div>
+                    </div>
+                  </div>
+
+                  <div class="relative z-10 flex justify-between items-end">
+                    <div class="font-mono text-xs text-[#0F1720] font-semibold bg-[#F4F7FA] px-1 py-0.5 border border-[#C3CDD6]">
+                      0 authorisations
+                    </div>
+                    <div class="font-mono text-[10px] text-[#55636F]">
+                      CALIB: NULL
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Metadata stamp -->
+              <div class="mt-4 pt-3 border-t border-[#C3CDD6] font-mono text-[11px] text-[#55636F] leading-tight space-y-1">
+                <div>ENTRY_TOTAL: <span class="text-[#0F1720]">0</span></div>
+                <div>EXPENDITURE: <span class="text-[#0F1720]">0.00 USDC</span></div>
+                <div>STATUS: <span class="text-[#55636F]">AWAITING_GENESIS</span></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ACTION BUTTON ROW -->
+          <div class="p-4 bg-[#F4F7FA] flex items-center justify-between">
+            <span class="font-mono text-xs text-[#55636F]">
+              Ready to initialize authority record
+            </span>
+            <div class="flex items-center space-x-3">
+              <button type="button" class="bg-transparent border border-[#C3CDD6] text-[#0F1720] hover:bg-[#E9EEF3] px-4 py-2 text-sm font-medium transition-colors">
+                Read the setup guide
+              </button>
+              <button type="button" class="bg-[#0F1720] text-[#F4F7FA] border border-[#0F1720] hover:bg-[#2B5F8A] hover:border-[#2B5F8A] px-5 py-2 text-sm font-medium transition-colors flex items-center gap-1.5">
+                <span>+</span>
+                <span>Create mandate</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTARIAL RATIONALE PANEL -->
+        <div class="bg-[#F4F7FA] border border-[#C3CDD6] p-5">
+          <div class="font-mono text-xs uppercase tracking-wider text-[#55636F] font-semibold mb-2 flex items-center gap-2">
+            <span>ARCHITECTURAL INVARIANT</span>
+            <span class="text-[#C3CDD6]">·</span>
+            <span>Why the key comes last</span>
+          </div>
+          <p class="text-[#0F1720] text-[15px] leading-relaxed">
+            Creating the mandate first means the agent has somewhere to spend from before it has the means to spend.
+          </p>
+          <div class="mt-3 pt-3 border-t border-[#C3CDD6] font-mono text-xs text-[#55636F] flex items-center justify-between">
+            <span>Enforced by smart contract assertion: <span class="text-[#0F1720]">assert_balance_present_before_key_bind()</span></span>
+            <span class="text-[#55636F]">NEP-413 NOTARIAL PROTOCOL</span>
+          </div>
+        </div>
+
+        <!-- CHAIN OF CUSTODY NOTE -->
+        <div class="border border-[#C3CDD6] bg-[#E9EEF3] p-4 text-xs font-mono text-[#55636F] leading-relaxed">
+          <div class="flex justify-between items-center mb-1 text-[#0F1720] font-semibold">
+            <span>CHAIN OF CUSTODY NOTE</span>
+            <span>NEP-413</span>
+          </div>
+          Every spend decision commits on-chain prior to threshold signature generation. Non-matching decision hashes prevent enclave key release automatically.
+        </div>
+
+      </div>
+
+      <!-- PROOF RAIL (4 COLUMNS / RIGHT HAND INSTRUMENT) -->
+      <aside class="col-span-4 min-w-[320px] bg-[#F4F7FA] border border-[#C3CDD6] p-4">
+        
+        <!-- PROOF RAIL HEADER -->
+        <div class="flex items-center justify-between pb-3 border-b border-[#C3CDD6] mb-3">
+          <div>
+            <div class="font-mono text-xs uppercase tracking-wider font-semibold text-[#0F1720]">PROOF RAIL</div>
+            <div class="text-xs text-[#55636F] mt-0.5">Most recent authorisation sequence</div>
+          </div>
+          <span class="font-mono text-xs px-1.5 py-0.5 border border-[#C3CDD6] bg-[#E9EEF3] text-[#55636F] uppercase">
+            IDLE
+          </span>
+        </div>
+
+        <!-- 4 STACKED CELLS (ALL SHOWING EM DASH) -->
+        <div class="space-y-3">
+          
+          <!-- CELL 1: READ -->
+          <div class="border border-[#C3CDD6] bg-[#F4F7FA] p-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs uppercase font-semibold text-[#0F1720]">1 READ</span>
+              <span class="font-mono text-base text-[#55636F]">—</span>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-[#C3CDD6] border-dashed">
+              <div class="text-xs text-[#55636F] font-mono">awaiting rpc quorum check</div>
+              <div class="h-6 mt-1 flex items-center text-xs font-mono text-[#55636F]">—</div>
+            </div>
+          </div>
+
+          <!-- CELL 2: ATTEST -->
+          <div class="border border-[#C3CDD6] bg-[#F4F7FA] p-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs uppercase font-semibold text-[#0F1720]">2 ATTEST</span>
+              <span class="font-mono text-base text-[#55636F]">—</span>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-[#C3CDD6] border-dashed">
+              <div class="text-xs text-[#55636F] font-mono">awaiting code hash assertion</div>
+              <div class="h-6 mt-1 flex items-center text-xs font-mono text-[#55636F]">—</div>
+            </div>
+          </div>
+
+          <!-- CELL 3: SIGN -->
+          <div class="border border-[#C3CDD6] bg-[#F4F7FA] p-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs uppercase font-semibold text-[#0F1720]">3 SIGN</span>
+              <span class="font-mono text-base text-[#55636F]">—</span>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-[#C3CDD6] border-dashed">
+              <div class="text-xs text-[#55636F] font-mono">threshold enclave dormant</div>
+              <div class="h-6 mt-1 flex items-center text-xs font-mono text-[#55636F]">—</div>
+            </div>
+          </div>
+
+          <!-- CELL 4: SETTLE -->
+          <div class="border border-[#C3CDD6] bg-[#F4F7FA] p-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs uppercase font-semibold text-[#0F1720]">4 SETTLE</span>
+              <span class="font-mono text-base text-[#55636F]">—</span>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-[#C3CDD6] border-dashed">
+              <div class="text-xs text-[#55636F] font-mono">near-testnet state pristine</div>
+              <div class="h-6 mt-1 flex items-center text-xs font-mono text-[#55636F]">—</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PROOF RAIL FOOTER METADATA -->
+        <div class="mt-4 pt-3 border-t border-[#C3CDD6] space-y-2 font-mono text-xs text-[#55636F]">
+          <div class="flex justify-between">
+            <span>DISPUTE WINDOW:</span>
+            <span class="text-[#0F1720] tabular-nums">0 BLOCKS REMAINING</span>
+          </div>
+          <div class="flex justify-between">
+            <span>COMMITMENT ROOT:</span>
+            <span class="text-[#55636F]">0x0000...0000</span>
+          </div>
+          <div class="flex justify-between">
+            <span>NOTARIAL SEAL:</span>
+            <span class="text-[#0F1720]">#0000-TN</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span>VERIFIER STATUS:</span>
+            <span class="text-[#55636F] flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#55636F]"></span>
+              IDLE LISTENER
+            </span>
+          </div>
+        </div>
+
+        <!-- STRICT EMPTY STATE CAPTION -->
+        <div class="mt-4 p-3 bg-[#E9EEF3] border border-[#C3CDD6] text-xs font-mono text-[#55636F] leading-normal">
+          nothing yet — this rail fills from real events only
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER STRIP -->
+  <footer class="w-full bg-[#E9EEF3] border-t border-[#C3CDD6] px-6 py-2.5 font-mono text-xs text-[#55636F]">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span>active path:</span>
+        <strong class="font-medium text-[#0F1720]">RPC_QUORUM</strong>
+        <span>·</span>
+        <span>no mainnet</span>
+        <span>·</span>
+        <span class="text-[#A9660F] font-medium">testnet only</span>
+      </div>
+      <div class="flex items-center space-x-6 text-[#55636F]">
+        <span><kbd class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[#0F1720]">N</kbd> new mandate</span>
+        <span><kbd class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[#0F1720]">/</kbd> search</span>
+        <span><kbd class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[#0F1720]">R</kbd> refresh rail</span>
+        <span><kbd class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[#0F1720]">ESC</kbd> dismiss</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

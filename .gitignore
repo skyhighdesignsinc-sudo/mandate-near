@@ -1,0 +1,35 @@
+# Local toolchain cache — machine-specific, never committed (docs/DECISIONS.md D-008).
+.tools/
+
+# Rust
+target/
+**/target/
+
+# Node
+node_modules/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Secrets — .env.example is the only env file that belongs in the repo (AGENTS.md §2.4)
+.env
+.env.*
+!.env.example
+
+# Generated key material (bin/key.mjs writes here)
+.secrets/
+
+# Local API key store — hashes of keys issued by `node tools/keys.mjs issue`.
+# Local state, not part of the submission: a fresh clone starts with no clients.
+mandate/console/data/api-keys.json
+
+# Contract build output (`make contract-wasm`)
+mandate/contracts/mandate/out/
+
+
+# OS
+Thumbs.db
+.DS_Store

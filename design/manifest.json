@@ -1,0 +1,301 @@
+{
+  "generatedAt": "2026-11-05T23:30:02.996Z",
+  "model": "GEMINI_3_8_FLASH",
+  "apps": [
+    {
+      "slug": "bond",
+      "title": "Bond — cross-chain credit desk",
+      "projectId": "15234375755641974169",
+      "screens": [
+        {
+          "id": "01-borrower-overview",
+          "title": "Credit line overview",
+          "files": [
+            {
+              "file": "01-borrower-overview.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "01-borrower-overview.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "02-lock-collateral",
+          "title": "Lock collateral with a 3-of-3 read",
+          "files": [
+            {
+              "file": "02-lock-collateral.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "02-lock-collateral.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "03-draw",
+          "title": "Draw against the line",
+          "files": [
+            {
+              "file": "03-draw.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "03-draw.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "04-statement",
+          "title": "Loan statement",
+          "files": [
+            {
+              "file": "04-statement.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "04-statement.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "05-closeout",
+          "title": "Close-out by threshold signature",
+          "files": [
+            {
+              "file": "05-closeout.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "05-closeout.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "06-desk-view",
+          "title": "Desk operator view",
+          "files": [
+            {
+              "file": "06-desk-view.png",
+              "kind": "screenshot",
+              "bytes": 581071
+            },
+            {
+              "file": "06-desk-view.html",
+              "kind": "html",
+              "bytes": 34003
+            },
+            {
+              "screenId": "a9490ccc6dd04e108ffdad12d63002fe",
+              "screenName": "projects/15234375755641974169/screens/a9490ccc6dd04e108ffdad12d63002fe"
+            }
+          ],
+          "seconds": 57
+        }
+      ]
+    },
+    {
+      "slug": "mandate",
+      "title": "Mandate — agent authority console",
+      "projectId": "867646234756351707",
+      "screens": [
+        {
+          "id": "01-overview",
+          "title": "Console overview",
+          "files": [
+            {
+              "file": "01-overview.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "01-overview.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "02-mandate-detail",
+          "title": "Mandate detail and kill switch",
+          "files": [
+            {
+              "file": "02-mandate-detail.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "02-mandate-detail.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "03-spend-composer",
+          "title": "Agent proposes a spend",
+          "files": [
+            {
+              "file": "03-spend-composer.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "03-spend-composer.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "04-escalation",
+          "title": "Escalation awaiting a human",
+          "files": [
+            {
+              "file": "04-escalation.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "04-escalation.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "05-refusal",
+          "title": "Refusal — the most important screen",
+          "files": [
+            {
+              "file": "05-refusal.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "05-refusal.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "06-audit",
+          "title": "Audit log and verification",
+          "files": [
+            {
+              "file": "06-audit.png",
+              "kind": "screenshot"
+            },
+            {
+              "file": "06-audit.html",
+              "kind": "html"
+            }
+          ],
+          "seconds": 0,
+          "skipped": true
+        },
+        {
+          "id": "07-first-run",
+          "title": "First run — no mandates yet",
+          "files": [
+            {
+              "file": "07-first-run.png",
+              "kind": "screenshot",
+              "bytes": 527659
+            },
+            {
+              "file": "07-first-run.html",
+              "kind": "html",
+              "bytes": 28206
+            },
+            {
+              "screenId": "46ac51d146ae424fbf70b0bdfa4cf0cf",
+              "screenName": "projects/867646234756351707/screens/46ac51d146ae424fbf70b0bdfa4cf0cf"
+            }
+          ],
+          "seconds": 49
+        },
+        {
+          "id": "08-verify-drawer",
+          "title": "Verify an attestation",
+          "files": [
+            {
+              "file": "08-verify-drawer.png",
+              "kind": "screenshot",
+              "bytes": 911523
+            },
+            {
+              "file": "08-verify-drawer.html",
+              "kind": "html",
+              "bytes": 31714
+            },
+            {
+              "screenId": "a900197eeab741feb5a07bdd3f88a74a",
+              "screenName": "projects/867646234756351707/screens/a900197eeab741feb5a07bdd3f88a74a"
+            }
+          ],
+          "seconds": 58
+        },
+        {
+          "id": "09-policy-editor",
+          "title": "Edit caps and allowlist",
+          "files": [
+            {
+              "file": "09-policy-editor.png",
+              "kind": "screenshot",
+              "bytes": 724443
+            },
+            {
+              "file": "09-policy-editor.html",
+              "kind": "html",
+              "bytes": 33947
+            },
+            {
+              "screenId": "ba5a0d3a2ebd48179bcee38350924afe",
+              "screenName": "projects/867646234756351707/screens/ba5a0d3a2ebd48179bcee38350924afe"
+            }
+          ],
+          "seconds": 59
+        },
+        {
+          "id": "10-kill-switch-confirm",
+          "title": "Kill switch confirmation",
+          "files": [
+            {
+              "file": "10-kill-switch-confirm.png",
+              "kind": "screenshot",
+              "bytes": 577139
+            },
+            {
+              "file": "10-kill-switch-confirm.html",
+              "kind": "html",
+              "bytes": 24333
+            },
+            {
+              "screenId": "75c8c7344bb0463a9700e435a40c37d1",
+              "screenName": "projects/867646234756351707/screens/75c8c7344bb0463a9700e435a40c37d1"
+            }
+          ],
+          "seconds": 53
+        }
+      ]
+    }
+  ]
+}

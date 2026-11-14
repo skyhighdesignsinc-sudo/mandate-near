@@ -1,0 +1,1007 @@
+{
+  "schema": 1,
+  "network": "testnet",
+  "contract": "mandate.testnet",
+  "attestor": "worker.testnet",
+  "owner": "owner.testnet",
+  "agent": "agent.testnet",
+  "asset": "USDC",
+  "decimals": 6,
+  "mandateId": "m1",
+  "policyJson": "{\"version\":1,\"asset\":\"USDC\",\"expires_at_block\":0,\"allow\":[{\"chain\":\"base_sepolia\",\"to\":\"0x9f2c55ac1d3e4b77a0c8f1d2e3b4a5c6d7e8f901\",\"label\":\"openrouter\"},{\"chain\":\"base_sepolia\",\"to\":\"0x1111111111111111111111111111111111111111\",\"label\":\"aws\"}],\"per_tx\":\"30000000\",\"per_day\":\"90000000\",\"per_counterparty_day\":\"25000000\",\"escalate_over\":\"15000000\",\"require_attestation\":true,\"attestation_code_hash\":\"sha256:9f3a7c1e5b0d2468ac9e71f3d5b8c0a2e4f60719283b4c5d6e7f8091a2b3c4d5\"}",
+  "policyHash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+  "policyRevisions": [
+    {
+      "rev": 1,
+      "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+      "at_block": 4120001,
+      "per_tx": "50000000",
+      "per_day": "120000000",
+      "per_counterparty_day": "40000000",
+      "escalate_over": "20000000"
+    },
+    {
+      "rev": 2,
+      "hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+      "at_block": 4120014,
+      "per_tx": "30000000",
+      "per_day": "90000000",
+      "per_counterparty_day": "25000000",
+      "escalate_over": "15000000"
+    }
+  ],
+  "attestationCodeHash": "sha256:9f3a7c1e5b0d2468ac9e71f3d5b8c0a2e4f60719283b4c5d6e7f8091a2b3c4d5",
+  "initial": {
+    "mandates": [
+      {
+        "id": "m1",
+        "owner": "owner.testnet",
+        "agent": "agent.testnet",
+        "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+        "policy_rev": 1,
+        "asset": "USDC",
+        "balance": "100000000",
+        "spent_total": "0",
+        "spent_day": "0",
+        "day_index": 19675925925,
+        "suspended": false,
+        "per_tx": "50000000",
+        "per_day": "120000000",
+        "escalate_over": "20000000",
+        "expires_at_block": 0,
+        "require_attestation": true,
+        "chains": [
+          "base_sepolia"
+        ],
+        "settled_count": 0
+      }
+    ],
+    "pending": [],
+    "stats": {
+      "total_mandates": 1,
+      "total_pending": 0,
+      "total_settled": 0,
+      "total_authorised": "0"
+    },
+    "held": "100000000",
+    "policy_history": [
+      {
+        "rev": 1,
+        "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+        "at_block": 4120001,
+        "per_tx": "50000000",
+        "per_day": "120000000",
+        "per_counterparty_day": "40000000",
+        "escalate_over": "20000000"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "index": 1,
+      "label": "Authorised",
+      "detail": "12.00 USDC to openrouter, below the 20.00 escalation threshold",
+      "kind": "authorised",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "88000000",
+            "spent_total": "12000000",
+            "spent_day": "12000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "12000000"
+        },
+        "held": "88000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "authorization": {
+        "mandate_id": "m1",
+        "intent_hash": "4e6f554758d1bd9945289fc48f6f8a2d355d0e7c59960c8e2e1c842920c65320",
+        "amount": "12000000",
+        "asset": "USDC",
+        "chain": "base_sepolia",
+        "vendor": "0x9f2c55ac1d3e4b77a0c8f1d2e3b4a5c6d7e8f901",
+        "decision_hash": "sha256:00000000000000000000000000000000000000000000000000000000000000a1",
+        "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+        "status": "authorised",
+        "request_id": null
+      }
+    },
+    {
+      "index": 2,
+      "label": "Refused",
+      "detail": "45.00 would make 57.00 at one counterparty today, above the 40.00 ceiling",
+      "kind": "refused",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "88000000",
+            "spent_total": "12000000",
+            "spent_day": "12000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "12000000"
+        },
+        "held": "88000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "code": "per_counterparty_day_exceeded"
+    },
+    {
+      "index": 3,
+      "label": "Escalated",
+      "detail": "21.00 is above the 20.00 threshold: the contract stores a pending request",
+      "kind": "escalated",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "88000000",
+            "spent_total": "12000000",
+            "spent_day": "12000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [
+          {
+            "request_id": "m1:c413619fcd5311a52d9f95c7cca12e68455467b305a44464dacca7b5c615c061",
+            "mandate_id": "m1",
+            "chain": "base_sepolia",
+            "asset": "USDC",
+            "vendor": "0x9f2c55ac1d3e4b77a0c8f1d2e3b4a5c6d7e8f901",
+            "amount": 21000000,
+            "intent_hash": "c413619fcd5311a52d9f95c7cca12e68455467b305a44464dacca7b5c615c061",
+            "decision_hash": "sha256:00000000000000000000000000000000000000000000000000000000000000a3",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "requested_at_block": 4120004
+          }
+        ],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 1,
+          "total_settled": 0,
+          "total_authorised": "12000000"
+        },
+        "held": "88000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "authorization": {
+        "mandate_id": "m1",
+        "intent_hash": "c413619fcd5311a52d9f95c7cca12e68455467b305a44464dacca7b5c615c061",
+        "amount": "21000000",
+        "asset": "USDC",
+        "chain": "base_sepolia",
+        "vendor": "0x9f2c55ac1d3e4b77a0c8f1d2e3b4a5c6d7e8f901",
+        "decision_hash": "sha256:00000000000000000000000000000000000000000000000000000000000000a3",
+        "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+        "status": "pending",
+        "request_id": "m1:c413619fcd5311a52d9f95c7cca12e68455467b305a44464dacca7b5c615c061"
+      }
+    },
+    {
+      "index": 4,
+      "label": "Approved",
+      "detail": "The owner approved the request; 21.00 USDC leaves the balance here",
+      "kind": "authorised",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "67000000",
+            "spent_total": "33000000",
+            "spent_day": "33000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "33000000"
+        },
+        "held": "67000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "authorization": {
+        "mandate_id": "m1",
+        "intent_hash": "c413619fcd5311a52d9f95c7cca12e68455467b305a44464dacca7b5c615c061",
+        "amount": "21000000",
+        "asset": "USDC",
+        "chain": "base_sepolia",
+        "vendor": "0x9f2c55ac1d3e4b77a0c8f1d2e3b4a5c6d7e8f901",
+        "decision_hash": "sha256:00000000000000000000000000000000000000000000000000000000000000a3",
+        "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+        "status": "authorised",
+        "request_id": "m1:c413619fcd5311a52d9f95c7cca12e68455467b305a44464dacca7b5c615c061"
+      }
+    },
+    {
+      "index": 5,
+      "label": "Authorised",
+      "detail": "6.00 USDC to aws; openrouter's spend does not count against aws",
+      "kind": "authorised",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "authorization": {
+        "mandate_id": "m1",
+        "intent_hash": "6ea8418793255e1d063c54411f4f0c99826f1e1256f5dd24e8285f3da617d234",
+        "amount": "6000000",
+        "asset": "USDC",
+        "chain": "base_sepolia",
+        "vendor": "0x1111111111111111111111111111111111111111",
+        "decision_hash": "sha256:00000000000000000000000000000000000000000000000000000000000000a5",
+        "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+        "status": "authorised",
+        "request_id": null
+      }
+    },
+    {
+      "index": 6,
+      "label": "Refused",
+      "detail": "The vendor is absent from the allowlist, so the code is typed and final",
+      "kind": "refused",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "code": "counterparty_not_allowed"
+    },
+    {
+      "index": 7,
+      "label": "Refused",
+      "detail": "The attested intent says 8.00, the call asks for 7.00: the hashes part company",
+      "kind": "refused",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "code": "attestation_mismatch"
+    },
+    {
+      "index": 8,
+      "label": "Refused",
+      "detail": "That decision hash already authorised step 1; a decision is good once",
+      "kind": "refused",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "code": "decision_replayed"
+    },
+    {
+      "index": 9,
+      "label": "Refused",
+      "detail": "The owner suspended the mandate; this is the kill switch, in one call",
+      "kind": "refused",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": true,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "code": "mandate_suspended"
+    },
+    {
+      "index": 10,
+      "label": "Resumed",
+      "detail": "Suspension is a flag, so resuming needs no re-funding and no new key",
+      "kind": "resumed",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 0
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 0,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      }
+    },
+    {
+      "index": 11,
+      "label": "Settled",
+      "detail": "The attestor recorded the Solana transaction against the intent hash",
+      "kind": "settled",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 1
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 1,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      }
+    },
+    {
+      "index": 12,
+      "label": "Refused",
+      "detail": "Settling the same intent twice is refused: one intent, one foreign tx",
+      "kind": "refused",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "policy_rev": 1,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "escalate_over": "20000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 1
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 1,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          }
+        ]
+      },
+      "code": "decision_replayed"
+    },
+    {
+      "index": 13,
+      "label": "Re-policied",
+      "detail": "Per-transaction 30.00, per counterparty 25.00: the hash changes and the revision is 2",
+      "kind": "repolicy",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+            "policy_rev": 2,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "30000000",
+            "per_day": "90000000",
+            "escalate_over": "15000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 1
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 1,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          },
+          {
+            "rev": 2,
+            "hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+            "at_block": 4120014,
+            "per_tx": "30000000",
+            "per_day": "90000000",
+            "per_counterparty_day": "25000000",
+            "escalate_over": "15000000"
+          }
+        ]
+      }
+    },
+    {
+      "index": 14,
+      "label": "Refused",
+      "detail": "5.00 is inside every new limit, but the decision was attested under revision 1",
+      "kind": "refused",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+            "policy_rev": 2,
+            "asset": "USDC",
+            "balance": "61000000",
+            "spent_total": "39000000",
+            "spent_day": "39000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "30000000",
+            "per_day": "90000000",
+            "escalate_over": "15000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 1
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 1,
+          "total_authorised": "39000000"
+        },
+        "held": "61000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          },
+          {
+            "rev": 2,
+            "hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+            "at_block": 4120014,
+            "per_tx": "30000000",
+            "per_day": "90000000",
+            "per_counterparty_day": "25000000",
+            "escalate_over": "15000000"
+          }
+        ]
+      },
+      "code": "policy_changed"
+    },
+    {
+      "index": 15,
+      "label": "Authorised",
+      "detail": "Re-attested under revision 2: same amount, a new decision, accepted",
+      "kind": "authorised",
+      "views": {
+        "mandates": [
+          {
+            "id": "m1",
+            "owner": "owner.testnet",
+            "agent": "agent.testnet",
+            "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+            "policy_rev": 2,
+            "asset": "USDC",
+            "balance": "56000000",
+            "spent_total": "44000000",
+            "spent_day": "44000000",
+            "day_index": 19675925925,
+            "suspended": false,
+            "per_tx": "30000000",
+            "per_day": "90000000",
+            "escalate_over": "15000000",
+            "expires_at_block": 0,
+            "require_attestation": true,
+            "chains": [
+              "base_sepolia"
+            ],
+            "settled_count": 1
+          }
+        ],
+        "pending": [],
+        "stats": {
+          "total_mandates": 1,
+          "total_pending": 0,
+          "total_settled": 1,
+          "total_authorised": "44000000"
+        },
+        "held": "56000000",
+        "policy_history": [
+          {
+            "rev": 1,
+            "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+            "at_block": 4120001,
+            "per_tx": "50000000",
+            "per_day": "120000000",
+            "per_counterparty_day": "40000000",
+            "escalate_over": "20000000"
+          },
+          {
+            "rev": 2,
+            "hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+            "at_block": 4120014,
+            "per_tx": "30000000",
+            "per_day": "90000000",
+            "per_counterparty_day": "25000000",
+            "escalate_over": "15000000"
+          }
+        ]
+      },
+      "authorization": {
+        "mandate_id": "m1",
+        "intent_hash": "46326f1e9b7337a99d0515f0c2fe93fd72854dd0af2edb7de69492baa7e3b152",
+        "amount": "5000000",
+        "asset": "USDC",
+        "chain": "base_sepolia",
+        "vendor": "0x1111111111111111111111111111111111111111",
+        "decision_hash": "sha256:00000000000000000000000000000000000000000000000000000000000000ae",
+        "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "status": "authorised",
+        "request_id": null
+      }
+    }
+  ],
+  "final": {
+    "mandates": [
+      {
+        "id": "m1",
+        "owner": "owner.testnet",
+        "agent": "agent.testnet",
+        "policy_hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "policy_rev": 2,
+        "asset": "USDC",
+        "balance": "56000000",
+        "spent_total": "44000000",
+        "spent_day": "44000000",
+        "day_index": 19675925925,
+        "suspended": false,
+        "per_tx": "30000000",
+        "per_day": "90000000",
+        "escalate_over": "15000000",
+        "expires_at_block": 0,
+        "require_attestation": true,
+        "chains": [
+          "base_sepolia"
+        ],
+        "settled_count": 1
+      }
+    ],
+    "pending": [],
+    "stats": {
+      "total_mandates": 1,
+      "total_pending": 0,
+      "total_settled": 1,
+      "total_authorised": "44000000"
+    },
+    "held": "56000000",
+    "policy_history": [
+      {
+        "rev": 1,
+        "hash": "a97eea1537bc13fae82e95505136ee6e4ab7944fe901a588bc6799e90ef3dcf0",
+        "at_block": 4120001,
+        "per_tx": "50000000",
+        "per_day": "120000000",
+        "per_counterparty_day": "40000000",
+        "escalate_over": "20000000"
+      },
+      {
+        "rev": 2,
+        "hash": "a67e5f7833e89785bd1b1ca62174df2224ede8db80c725408c9f8d4c2fcf32fd",
+        "at_block": 4120014,
+        "per_tx": "30000000",
+        "per_day": "90000000",
+        "per_counterparty_day": "25000000",
+        "escalate_over": "15000000"
+      }
+    ]
+  }
+}

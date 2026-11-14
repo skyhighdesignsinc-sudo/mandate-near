@@ -1,0 +1,20 @@
+{
+  "name": "mandate",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An agent's budget is a contract balance; its reason is an attestation.",
+  "scripts": {
+    "dev": "node tools/serve-console.mjs 4173",
+    "demo": "node tools/demo-report.mjs",
+    "verify": "node tools/verify.mjs",
+    "doctor": "node tools/doctor.mjs",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.56.0",
+    "mermaid": "11.17.2",
+    "near-api-js": "^7.4.0"
+  }
+}

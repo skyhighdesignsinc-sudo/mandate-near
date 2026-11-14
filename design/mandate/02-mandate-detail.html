@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mandate — loop.testnet Authority Console</title>
+  <!-- Google Fonts: Fraunces, Public Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ground: '#E9EEF3',
+            panel: '#F4F7FA',
+            hairline: '#C3CDD6',
+            'txt-primary': '#0F1720',
+            'txt-secondary': '#55636F',
+            'acc-verified': '#2E6F5E',
+            'acc-inflight': '#2B5F8A',
+            'acc-human': '#A9660F',
+            'acc-refused': '#A83A2C',
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            sans: ['Public Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '2px',
+            sm: '2px',
+            md: '2px',
+            lg: '2px',
+            xl: '2px',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      border-radius: 2px !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+    body {
+      background-color: #E9EEF3;
+      color: #0F1720;
+      font-family: 'Public Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-tabular {
+      font-variant-numeric: tabular-nums;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.92); }
+    }
+    .pulse-dot {
+      animation: pulse-subtle 1.8s ease-in-out infinite;
+    }
+    /* Hairline borders */
+    .border-hairline {
+      border-color: #C3CDD6;
+    }
+    .divide-hairline > * + * {
+      border-color: #C3CDD6;
+    }
+    /* Explicit focus styling per brief */
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid #2B5F8A !important;
+      outline-offset: 1px;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#E9EEF3] text-[#0F1720] flex flex-col justify-between selection:bg-[#C3CDD6]">
+
+  <!-- TOP CONTEXT BAR -->
+  <header class="w-full bg-[#E9EEF3] border-b border-[#C3CDD6] px-6 py-2.5">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between font-mono text-xs text-[#55636F]">
+      <div class="flex items-center space-x-3">
+        <span class="font-bold tracking-wider text-[#0F1720]">MANDATE</span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[11px] text-[#0F1720]">testnet</span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span>contract: <span class="text-[#0F1720]">mandate.testnet</span></span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span>verification: <span class="text-[#2E6F5E] font-medium">✓ RPC_QUORUM 3/3</span></span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>block: <span class="text-[#0F1720] font-tabular">#148,904,781</span></span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span>authority desk: <span class="text-[#0F1720]">ed25519:9vK...8d1P</span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER (12-column grid, max-width 1200px, 24px gutter) -->
+  <main class="w-full max-w-[1200px] mx-auto px-6 py-8 flex-grow">
+    
+    <!-- PAGE TITLE / METADATA ROW -->
+    <div class="mb-6 flex items-baseline justify-between border-b border-[#C3CDD6] pb-4">
+      <div>
+        <div class="flex items-center space-x-3">
+          <a href="#" class="font-mono text-xs text-[#55636F] hover:text-[#0F1720] flex items-center gap-1 mb-1">
+            ← <span class="underline underline-offset-2">All mandates</span>
+          </a>
+        </div>
+        <div class="flex items-center space-x-3.5">
+          <h1 class="font-mono text-2xl font-semibold tracking-tight text-[#0F1720]">loop.testnet</h1>
+          <!-- Verified Badge -->
+          <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 border border-[#2E6F5E] bg-[#F4F7FA] text-[#2E6F5E] font-mono text-xs">
+            <span>✓</span>
+            <span class="font-medium tracking-wide">active</span>
+          </div>
+          <span class="text-[#C3CDD6] font-mono">·</span>
+          <span class="font-mono text-xs text-[#55636F]">instrument ref: MNDT-TN-4190</span>
+        </div>
+        <p class="text-[#55636F] text-sm mt-1 font-sans">Procurement — freight and customs · created 2026-11-02</p>
+      </div>
+
+      <!-- Quick summary figures -->
+      <div class="flex items-baseline space-x-6 text-right">
+        <div>
+          <div class="font-mono text-[11px] uppercase tracking-wider text-[#55636F]">Funded balance</div>
+          <div class="font-mono text-xl font-medium text-[#0F1720] font-tabular">612.40 <span class="text-xs text-[#55636F]">USDC</span></div>
+        </div>
+        <div class="border-l border-[#C3CDD6] pl-6">
+          <div class="font-mono text-[11px] uppercase tracking-wider text-[#55636F]">Authorised today</div>
+          <div class="font-serif text-2xl text-[#0F1720] font-tabular">420.00 <span class="text-xs font-mono text-[#55636F]">USDC</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12-COLUMN LAYOUT: 8 cols Canvas, 4 cols Proof Rail -->
+    <div class="grid grid-cols-12 gap-6 items-start">
+      
+      <!-- PRIMARY CANVAS (8 COLUMNS) -->
+      <div class="col-span-8 flex flex-col space-y-6">
+        
+        <!-- PANEL 1: POLICY DEFINITION LIST -->
+        <section class="bg-[#F4F7FA] border border-[#C3CDD6] p-5">
+          <div class="flex items-center justify-between border-b border-[#C3CDD6] pb-2.5 mb-4">
+            <h2 class="font-mono text-xs uppercase tracking-wider font-semibold text-[#0F1720]">Mandate Policy Limits</h2>
+            <span class="font-mono text-[11px] text-[#55636F]">NEP-413 Attestation Standard</span>
+          </div>
+
+          <!-- Two-column definition list with hairline rules -->
+          <dl class="grid grid-cols-2 gap-x-8 gap-y-3.5 text-sm">
+            <div class="flex justify-between items-baseline border-b border-[#C3CDD6] pb-2">
+              <dt class="text-[#55636F]">Per-transaction cap</dt>
+              <dd class="font-mono font-medium text-[#0F1720] font-tabular text-right">250.00 USDC</dd>
+            </div>
+            <div class="flex justify-between items-baseline border-b border-[#C3CDD6] pb-2">
+              <dt class="text-[#55636F]">Daily cap</dt>
+              <dd class="font-mono font-medium text-[#0F1720] font-tabular text-right">1,000.00 USDC</dd>
+            </div>
+            <div class="flex justify-between items-baseline border-b border-[#C3CDD6] pb-2">
+              <dt class="text-[#55636F]">Funded balance</dt>
+              <dd class="font-mono font-medium text-[#0F1720] font-tabular text-right">612.40 USDC</dd>
+            </div>
+            <div class="flex justify-between items-baseline border-b border-[#C3CDD6] pb-2">
+              <dt class="text-[#55636F]">Chain scope</dt>
+              <dd class="font-mono text-[#0F1720] text-right">near-testnet only</dd>
+            </div>
+            <!-- Full width Allowlist row -->
+            <div class="col-span-2 pt-1">
+              <div class="flex items-center justify-between mb-2">
+                <dt class="text-[#55636F]">Counterparty allowlist</dt>
+                <dd class="font-mono text-[11px] text-[#55636F]">3 verified entities</dd>
+              </div>
+              <dd class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center px-2.5 py-1 bg-[#E9EEF3] border border-[#C3CDD6] font-mono text-xs text-[#0F1720]">
+                  <span class="text-[#2E6F5E] mr-1.5 font-bold">✓</span>Acme Freight
+                </span>
+                <span class="inline-flex items-center px-2.5 py-1 bg-[#E9EEF3] border border-[#C3CDD6] font-mono text-xs text-[#0F1720]">
+                  <span class="text-[#2E6F5E] mr-1.5 font-bold">✓</span>Northwind Customs
+                </span>
+                <span class="inline-flex items-center px-2.5 py-1 bg-[#E9EEF3] border border-[#C3CDD6] font-mono text-xs text-[#0F1720]">
+                  <span class="text-[#2E6F5E] mr-1.5 font-bold">✓</span>Harbor Logistics
+                </span>
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- PANEL 2: KEY PERMISSION & RESTRICTIONS -->
+        <section class="bg-[#F4F7FA] border border-[#C3CDD6] p-5">
+          <div class="flex items-center justify-between border-b border-[#C3CDD6] pb-2.5 mb-3">
+            <h2 class="font-mono text-xs uppercase tracking-wider font-semibold text-[#0F1720]">The key cannot transfer</h2>
+            <span class="font-mono text-[11px] text-[#2E6F5E]">permission-bounded</span>
+          </div>
+
+          <div class="flex items-center justify-between bg-[#E9EEF3] border border-[#C3CDD6] px-3 py-2 mb-3">
+            <div class="flex items-center space-x-2 font-mono text-xs text-[#0F1720]">
+              <span class="text-[#55636F]">public key:</span>
+              <span class="font-medium">ed25519:7Yb3...Qm2x</span>
+              <button title="Copy public key" class="text-[#55636F] hover:text-[#0F1720] inline-flex items-center p-0.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
+                  <rect x="9" y="9" width="13" height="13"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+            <a href="#" class="font-mono text-xs text-[#2B5F8A] hover:underline flex items-center gap-1">
+              <span>view on explorer</span>
+              <span>↗</span>
+            </a>
+          </div>
+
+          <p class="text-sm text-[#0F1720] leading-relaxed">
+            Function-call access. Method spend only. No transfer, no add_key, no delete_key.
+          </p>
+          <p class="text-xs text-[#55636F] mt-1.5 font-mono">
+            Attestation root: 0x489b091f2c4187e14a1a...48ec7891
+          </p>
+        </section>
+
+        <!-- PANEL 3: DECISION LOG TABLE -->
+        <section class="bg-[#F4F7FA] border border-[#C3CDD6]">
+          <div class="p-4 border-b border-[#C3CDD6] flex items-center justify-between bg-[#F4F7FA]">
+            <div>
+              <h2 class="font-mono text-xs uppercase tracking-wider font-semibold text-[#0F1720]">Decisions today</h2>
+              <p class="text-xs text-[#55636F] mt-0.5">Cryptographic spend verdicts committed on-chain</p>
+            </div>
+            <span class="font-mono text-xs text-[#55636F]">4 evaluation entries</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="border-b border-[#C3CDD6] bg-[#E9EEF3] text-[11px] font-mono uppercase tracking-wider text-[#55636F]">
+                  <th class="py-2.5 px-4 font-normal">TIME</th>
+                  <th class="py-2.5 px-4 font-normal">COUNTERPARTY</th>
+                  <th class="py-2.5 px-4 font-normal text-right">AMOUNT</th>
+                  <th class="py-2.5 px-4 font-normal">RESULT</th>
+                  <th class="py-2.5 px-4 font-normal text-right">DECISION HASH</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#C3CDD6] font-mono text-xs">
+                <!-- Row 1: 14:02 Acme Freight 240.00 verified 0x41ae...9c02 -->
+                <tr class="hover:bg-[#E9EEF3]/40">
+                  <td class="py-3 px-4 text-[#55636F] font-tabular">14:02</td>
+                  <td class="py-3 px-4 text-[#0F1720] font-sans font-medium">Acme Freight</td>
+                  <td class="py-3 px-4 text-right text-[#0F1720] font-tabular">240.00 <span class="text-[10px] text-[#55636F]">USDC</span></td>
+                  <td class="py-3 px-4">
+                    <span class="inline-flex items-center space-x-1 text-[#2E6F5E] font-medium">
+                      <span>✓</span>
+                      <span>verified</span>
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <span class="text-[#0F1720]">0x41ae...9c02</span>
+                    <button class="ml-1 text-[#55636F] hover:text-[#0F1720]" title="Copy hash">
+                      <svg class="inline" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- Row 2: 11:47 Harbor Logistics 180.00 verified 0x77b1...3f58 -->
+                <tr class="hover:bg-[#E9EEF3]/40">
+                  <td class="py-3 px-4 text-[#55636F] font-tabular">11:47</td>
+                  <td class="py-3 px-4 text-[#0F1720] font-sans font-medium">Harbor Logistics</td>
+                  <td class="py-3 px-4 text-right text-[#0F1720] font-tabular">180.00 <span class="text-[10px] text-[#55636F]">USDC</span></td>
+                  <td class="py-3 px-4">
+                    <span class="inline-flex items-center space-x-1 text-[#2E6F5E] font-medium">
+                      <span>✓</span>
+                      <span>verified</span>
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <span class="text-[#0F1720]">0x77b1...3f58</span>
+                    <button class="ml-1 text-[#55636F] hover:text-[#0F1720]" title="Copy hash">
+                      <svg class="inline" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- Row 3: 09:15 "unlisted vendor" 95.00 refused in #A83A2C with code counterparty_not_allowed -->
+                <tr class="bg-[#A83A2C]/5 hover:bg-[#A83A2C]/10">
+                  <td class="py-3 px-4 text-[#55636F] font-tabular">09:15</td>
+                  <td class="py-3 px-4 text-[#A83A2C] font-sans font-medium">unlisted vendor</td>
+                  <td class="py-3 px-4 text-right text-[#0F1720] font-tabular">95.00 <span class="text-[10px] text-[#55636F]">USDC</span></td>
+                  <td class="py-3 px-4">
+                    <div class="flex flex-col">
+                      <span class="inline-flex items-center space-x-1 text-[#A83A2C] font-semibold">
+                        <span>✕</span>
+                        <span>refused</span>
+                      </span>
+                      <span class="text-[10px] text-[#A83A2C] font-mono mt-0.5">counterparty_not_allowed</span>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <span class="text-[#55636F]">—</span>
+                  </td>
+                </tr>
+
+                <!-- Row 4: 08:30 Northwind Customs 60.00 verified 0x2c90...ae71 -->
+                <tr class="hover:bg-[#E9EEF3]/40">
+                  <td class="py-3 px-4 text-[#55636F] font-tabular">08:30</td>
+                  <td class="py-3 px-4 text-[#0F1720] font-sans font-medium">Northwind Customs</td>
+                  <td class="py-3 px-4 text-right text-[#0F1720] font-tabular">60.00 <span class="text-[10px] text-[#55636F]">USDC</span></td>
+                  <td class="py-3 px-4">
+                    <span class="inline-flex items-center space-x-1 text-[#2E6F5E] font-medium">
+                      <span>✓</span>
+                      <span>verified</span>
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <span class="text-[#0F1720]">0x2c90...ae71</span>
+                    <button class="ml-1 text-[#55636F] hover:text-[#0F1720]" title="Copy hash">
+                      <svg class="inline" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- PANEL 4: DANGER PANEL (BOTTOM OF CANVAS) -->
+        <section class="bg-[#F4F7FA] border border-[#A83A2C] p-5">
+          <div class="flex items-center justify-between border-b border-[#C3CDD6] pb-2 mb-3">
+            <h2 class="font-mono text-xs uppercase tracking-wider font-semibold text-[#A83A2C] flex items-center gap-1.5">
+              <span>⚠</span>
+              <span>Suspend mandate</span>
+            </h2>
+            <span class="font-mono text-[11px] text-[#55636F]">irreversible lock state</span>
+          </div>
+
+          <p class="text-sm text-[#0F1720] leading-relaxed mb-4">
+            Suspension is one transaction. The agent's next call is refused with mandate_suspended. Deleting the access key is a second, separate transaction.
+          </p>
+
+          <div class="flex items-center space-x-4">
+            <button class="px-4 py-2 border border-[#A83A2C] bg-[#F4F7FA] hover:bg-[#A83A2C] text-[#A83A2C] hover:text-white font-mono text-xs font-semibold uppercase tracking-wider transition-colors">
+              Suspend
+            </button>
+            <a href="#" class="font-mono text-xs text-[#55636F] hover:text-[#A83A2C] underline underline-offset-4">
+              Delete access key
+            </a>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN: PROOF RAIL (4 COLUMNS, MIN 320PX) -->
+      <aside class="col-span-4 bg-[#F4F7FA] border border-[#C3CDD6] flex flex-col divide-y divide-[#C3CDD6]">
+        
+        <!-- PROOF RAIL HEADER -->
+        <div class="p-4 bg-[#E9EEF3] flex items-center justify-between">
+          <div>
+            <div class="font-mono text-xs uppercase font-bold tracking-wider text-[#0F1720]">PROOF RAIL</div>
+            <div class="text-[11px] text-[#55636F] font-sans">Most recent authorisation sequence</div>
+          </div>
+          <span class="border border-[#2B5F8A] bg-[#F4F7FA] text-[#2B5F8A] font-mono text-[10px] px-1.5 py-0.5 font-medium uppercase">
+            SIGNING ACTIVE
+          </span>
+        </div>
+
+        <!-- STAGE 1: READ (verified) -->
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-mono text-xs font-bold text-[#0F1720]">1 READ</span>
+            <span class="font-mono text-xs text-[#2E6F5E] font-medium flex items-center gap-1">
+              <span>✓</span>
+              <span>verified</span>
+            </span>
+          </div>
+          <div class="text-xs text-[#55636F] mb-1 font-sans">3 of 3 RPCs</div>
+          <div class="bg-[#E9EEF3] border border-[#C3CDD6] px-2.5 py-1.5 font-mono text-xs text-[#0F1720] flex items-center justify-between">
+            <span>0x8f2c...41ae</span>
+            <button class="text-[#55636F] hover:text-[#0F1720]" title="Copy hash">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- STAGE 2: ATTEST (verified) -->
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-mono text-xs font-bold text-[#0F1720]">2 ATTEST</span>
+            <span class="font-mono text-xs text-[#2E6F5E] font-medium flex items-center gap-1">
+              <span>✓</span>
+              <span>verified</span>
+            </span>
+          </div>
+          <div class="text-xs text-[#55636F] mb-1 font-sans">code hash</div>
+          <div class="bg-[#E9EEF3] border border-[#C3CDD6] px-2.5 py-1.5 font-mono text-xs text-[#0F1720] flex items-center justify-between">
+            <span>0x1c77...de19</span>
+            <button class="text-[#55636F] hover:text-[#0F1720]" title="Copy hash">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- STAGE 3: SIGN (in flight with pulsing dot) -->
+        <div class="p-4 bg-[#2B5F8A]/5">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-mono text-xs font-bold text-[#0F1720]">3 SIGN</span>
+            <span class="font-mono text-xs text-[#2B5F8A] font-medium flex items-center space-x-1.5">
+              <span class="w-2 h-2 bg-[#2B5F8A] pulse-dot inline-block"></span>
+              <span>in flight</span>
+            </span>
+          </div>
+          <div class="text-xs text-[#2B5F8A] mb-1 font-mono font-medium">11 of 17 collecting</div>
+          <div class="bg-[#E9EEF3] border border-[#C3CDD6] px-2.5 py-1.5 font-mono text-xs text-[#0F1720] flex items-center justify-between">
+            <span class="text-[#55636F]">sig ref: <span class="text-[#0F1720]">0x5b0e...77c1</span></span>
+            <button class="text-[#55636F] hover:text-[#0F1720]" title="Copy reference">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- STAGE 4: SETTLE (not reached: em dash alone, visibly empty) -->
+        <div class="p-4 bg-[#F4F7FA]">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-mono text-xs font-bold text-[#55636F]">4 SETTLE</span>
+            <span class="font-mono text-xs text-[#55636F]">—</span>
+          </div>
+          <div class="text-xs text-[#55636F] font-mono py-2 italic text-center border border-dashed border-[#C3CDD6]">
+            awaiting threshold signature quorum
+          </div>
+        </div>
+
+        <!-- NOTARIAL SEAL / REGISTRY AUDIT FOOTER INSIDE RAIL -->
+        <div class="p-4 bg-[#E9EEF3] font-mono text-[11px] text-[#55636F] space-y-1.5">
+          <div class="flex justify-between">
+            <span>DISPUTE WINDOW:</span>
+            <span class="text-[#0F1720]">0 BLOCKS REMAINING</span>
+          </div>
+          <div class="flex justify-between">
+            <span>COMMITMENT ROOT:</span>
+            <span class="text-[#0F1720]">0x9d31...0a44</span>
+          </div>
+          <div class="flex justify-between">
+            <span>NOTARIAL SEAL:</span>
+            <span class="text-[#0F1720]">#9412-TN</span>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER STRIP -->
+  <footer class="w-full bg-[#E9EEF3] border-t border-[#C3CDD6] px-6 py-2.5">
+    <div class="max-w-[1200px] mx-auto flex items-center justify-between font-mono text-xs text-[#55636F]">
+      <!-- Status descriptor -->
+      <div class="flex items-center space-x-2">
+        <span>active path: <span class="text-[#0F1720]">RPC_QUORUM</span></span>
+        <span class="text-[#C3CDD6]">·</span>
+        <span>no mainnet</span>
+        <span class="text-[#C3CDD6]">·</span>
+        <span class="text-[#A9660F] font-medium">testnet only</span>
+      </div>
+
+      <!-- 4-item keyboard hint row -->
+      <div class="flex items-center space-x-5">
+        <span class="flex items-center gap-1.5">
+          <kbd class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[10px] text-[#0F1720]">N</kbd>
+          <span>new mandate</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <kbd class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[10px] text-[#0F1720]">/</kbd>
+          <span>search</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <kbd class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[10px] text-[#0F1720]">R</kbd>
+          <span>refresh rail</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <kbd class="border border-[#C3CDD6] bg-[#F4F7FA] px-1.5 py-0.5 text-[10px] text-[#0F1720]">ESC</kbd>
+          <span>close view</span>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

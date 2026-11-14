@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mandate — Policy (Agent Authority Console)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ground: #E9EEF3;
+      --raised: #F4F7FA;
+      --text-primary: #0F1720;
+      --text-secondary: #55636F;
+      --hairline: #C3CDD6;
+      --accent-verified: #2E6F5E;
+      --accent-inflight: #2B5F8A;
+      --accent-human: #A9660F;
+      --accent-refused: #A83A2C;
+    }
+
+    body {
+      background-color: var(--ground);
+      color: var(--text-primary);
+      font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-serif {
+      font-family: 'Fraunces', Georgia, serif;
+      font-variation-settings: "opsz" 36;
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-feature-settings: "tnum" 1;
+    }
+
+    .tnum {
+      font-feature-settings: "tnum" 1;
+    }
+
+    /* Strict hairline and border tokens */
+    .border-hairline {
+      border-color: var(--hairline);
+    }
+    .divide-hairline > * + * {
+      border-color: var(--hairline);
+    }
+
+    /* Pulse animation for in flight proof rail state */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+    .pulse-dot {
+      animation: pulse-dot 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Focus rings per accessibility constraint */
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--accent-inflight) !important;
+      outline-offset: 1px;
+    }
+
+    /* Custom remove chip button hover */
+    .chip-remove:hover {
+      background-color: #C3CDD6;
+      color: var(--accent-refused);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#2B5F8A]/15 selection:text-[#0F1720]">
+
+  <div>
+    <!-- CONTEXT BAR (exact spec) -->
+    <header class="w-full bg-[#E9EEF3] border-b border-[#C3CDD6] text-xs font-mono text-[#55636F] px-6 py-2.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="font-bold tracking-wider text-[#0F1720]">MANDATE</span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span class="px-1.5 py-0.5 border border-[#C3CDD6] bg-[#F4F7FA] text-[11px] uppercase tracking-wide text-[#0F1720]">TESTNET</span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span class="text-[#55636F]">contract: <span class="text-[#0F1720]">mandate.testnet</span></span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span class="inline-flex items-center gap-1.5 text-[#2E6F5E]">
+          <span>✓</span>
+          <span>verification: RPC_QUORUM 3/3</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-4 text-[11px]">
+        <span>block: <span class="text-[#0F1720]">#214,896,140</span></span>
+        <span class="text-[#C3CDD6]">/</span>
+        <span class="flex items-center gap-1">
+          authority desk: <span class="text-[#0F1720]">ed25519:9vK...8d1P</span>
+          <button class="text-[#55636F] hover:text-[#0F1720]" title="Copy address">
+            <svg class="w-3 h-3 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="1"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </span>
+      </div>
+    </header>
+
+    <!-- SUBHEADER / RECORD METADATA -->
+    <nav class="max-w-[1200px] mx-auto w-full px-6 pt-5 pb-3 flex items-baseline justify-between text-xs text-[#55636F]">
+      <div class="flex items-center gap-2">
+        <a href="#" class="hover:text-[#0F1720] transition-colors flex items-center gap-1 font-mono">
+          <span>←</span> <span>All mandates</span>
+        </a>
+        <span class="text-[#C3CDD6]">/</span>
+        <span>Policy amendment record</span>
+      </div>
+      <div class="font-mono text-[11px] flex items-center gap-3">
+        <span>instrument ref: <span class="text-[#0F1720] font-medium">MNDT-TN-4190</span></span>
+        <span class="text-[#C3CDD6]">·</span>
+        <span>amendment sequence: <span class="text-[#0F1720]">rev_0x9e12c8</span></span>
+      </div>
+    </nav>
+
+    <!-- MAIN WORKSPACE: 12 COLS (8 Col Main Canvas + 4 Col Proof Rail) -->
+    <main class="max-w-[1200px] mx-auto w-full px-6 pb-12">
+      <div class="grid grid-cols-12 gap-6">
+
+        <!-- PRIMARY CANVAS (8 COLUMNS) -->
+        <div class="col-span-8 flex flex-col gap-6">
+
+          <!-- PAGE HEADER TITLE & NOTARIAL SUBTITLE -->
+          <div class="border-b border-[#C3CDD6] pb-4">
+            <div class="flex items-baseline justify-between">
+              <h1 class="font-serif text-[42px] leading-tight font-semibold text-[#0F1720] tracking-tight">Policy</h1>
+              <div class="font-mono text-[11px] text-[#2B5F8A] bg-[#F4F7FA] border border-[#C3CDD6] px-2 py-0.5 rounded-[2px] flex items-center gap-1.5">
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#2B5F8A] pulse-dot"></span>
+                <span>AMENDMENT DRAFTING</span>
+              </div>
+            </div>
+            <p class="text-[#55636F] text-[15px] mt-1">Changes apply to the next decision, never to one already signed.</p>
+          </div>
+
+          <!-- TOP PANEL: TWO-COLUMN POLICY FORM -->
+          <section class="bg-[#F4F7FA] border border-[#C3CDD6] rounded-[2px] p-5">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-[#C3CDD6] text-xs font-mono">
+              <span class="tracking-wider uppercase text-[#0F1720] font-medium">MANDATE AUTHORITY PARAMETERS</span>
+              <span class="text-[#55636F]">NEP-413 Attestation Standard</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+              
+              <!-- LEFT COLUMN: CAPS & LIMITS -->
+              <div class="flex flex-col gap-4">
+                
+                <!-- Per-transaction cap -->
+                <div>
+                  <div class="flex items-baseline justify-between mb-1">
+                    <label for="per-tx-cap" class="text-xs text-[#0F1720] font-medium uppercase font-mono tracking-wider">Per-transaction cap</label>
+                    <span class="font-mono text-[11px] text-[#55636F]">current: 250.00</span>
+                  </div>
+                  <div class="relative">
+                    <input 
+                      id="per-tx-cap" 
+                      type="text" 
+                      value="300.00 USDC" 
+                      class="w-full bg-[#E9EEF3] border border-[#C3CDD6] rounded-[2px] px-3 py-2 font-mono text-sm text-[#0F1720] tnum focus:bg-[#FFFFFF] transition-colors"
+                    />
+                    <span class="absolute right-2.5 top-2.5 text-[11px] font-mono text-[#2B5F8A] uppercase font-medium">edited</span>
+                  </div>
+                  <p class="text-[12px] text-[#55636F] mt-1">Hard limit per candidate spend invocation.</p>
+                </div>
+
+                <!-- Daily cap -->
+                <div>
+                  <div class="flex items-baseline justify-between mb-1">
+                    <label for="daily-cap" class="text-xs text-[#0F1720] font-medium uppercase font-mono tracking-wider">Daily cap</label>
+                    <span class="font-mono text-[11px] text-[#55636F]">current: 1,000.00</span>
+                  </div>
+                  <div class="relative">
+                    <input 
+                      id="daily-cap" 
+                      type="text" 
+                      value="1,000.00 USDC" 
+                      class="w-full bg-[#E9EEF3] border border-[#C3CDD6] rounded-[2px] px-3 py-2 font-mono text-sm text-[#0F1720] tnum focus:bg-[#FFFFFF] transition-colors"
+                    />
+                    <span class="absolute right-2.5 top-2.5 text-[11px] font-mono text-[#55636F] uppercase">unchanged</span>
+                  </div>
+                  <p class="text-[12px] text-[#55636F] mt-1">Rolling 24-hour baseline ceiling on testnet.</p>
+                </div>
+
+                <!-- Escalation above -->
+                <div>
+                  <div class="flex items-baseline justify-between mb-1">
+                    <label for="escalation-above" class="text-xs text-[#0F1720] font-medium uppercase font-mono tracking-wider">Escalation above</label>
+                    <span class="font-mono text-[11px] text-[#A9660F] flex items-center gap-1">
+                      <span>●</span> requires a human
+                    </span>
+                  </div>
+                  <div class="relative">
+                    <input 
+                      id="escalation-above" 
+                      type="text" 
+                      value="600.00 USDC" 
+                      class="w-full bg-[#E9EEF3] border border-[#C3CDD6] rounded-[2px] px-3 py-2 font-mono text-sm text-[#0F1720] tnum focus:bg-[#FFFFFF] transition-colors"
+                    />
+                    <span class="absolute right-2.5 top-2.5 text-[11px] font-mono text-[#55636F] uppercase">unchanged</span>
+                  </div>
+                  <p class="text-[12px] text-[#55636F] mt-1">Transactions exceeding this halt for explicit keyholder approval.</p>
+                </div>
+
+              </div>
+
+              <!-- RIGHT COLUMN: COUNTERPARTY ALLOWLIST -->
+              <div class="flex flex-col gap-3">
+                <div class="flex items-baseline justify-between mb-0.5">
+                  <span class="text-xs text-[#0F1720] font-medium uppercase font-mono tracking-wider">Counterparty allowlist</span>
+                  <span class="font-mono text-[11px] text-[#55636F]">4 accounts pending</span>
+                </div>
+
+                <!-- Chips Container -->
+                <div class="flex flex-wrap gap-1.5 p-2 bg-[#E9EEF3] border border-[#C3CDD6] rounded-[2px] min-h-[76px] content-start">
+                  
+                  <!-- Chip 1: Acme Freight -->
+                  <div class="inline-flex items-center gap-1.5 bg-[#F4F7FA] border border-[#C3CDD6] rounded-[2px] pl-2 pr-1.5 py-1 text-xs text-[#0F1720]">
+                    <span class="font-mono text-[11px] text-[#2E6F5E]">✓</span>
+                    <span>Acme Freight</span>
+                    <button class="chip-remove w-4 h-4 ml-0.5 inline-flex items-center justify-center rounded-[2px] text-[#55636F] transition-colors" title="Remove Acme Freight">
+                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                  </div>
+
+                  <!-- Chip 2: Northwind Customs -->
+                  <div class="inline-flex items-center gap-1.5 bg-[#F4F7FA] border border-[#C3CDD6] rounded-[2px] pl-2 pr-1.5 py-1 text-xs text-[#0F1720]">
+                    <span class="font-mono text-[11px] text-[#2E6F5E]">✓</span>
+                    <span>Northwind Customs</span>
+                    <button class="chip-remove w-4 h-4 ml-0.5 inline-flex items-center justify-center rounded-[2px] text-[#55636F] transition-colors" title="Remove Northwind Customs">
+                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                  </div>
+
+                  <!-- Chip 3: Harbor Logistics -->
+                  <div class="inline-flex items-center gap-1.5 bg-[#F4F7FA] border border-[#C3CDD6] rounded-[2px] pl-2 pr-1.5 py-1 text-xs text-[#0F1720]">
+                    <span class="font-mono text-[11px] text-[#2E6F5E]">✓</span>
+                    <span>Harbor Logistics</span>
+                    <button class="chip-remove w-4 h-4 ml-0.5 inline-flex items-center justify-center rounded-[2px] text-[#55636F] transition-colors" title="Remove Harbor Logistics">
+                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                  </div>
+
+                  <!-- Added chip: byte-bazaar.testnet (pending addition) -->
+                  <div class="inline-flex items-center gap-1.5 bg-[#F4F7FA] border border-[#2B5F8A] rounded-[2px] pl-2 pr-1.5 py-1 text-xs text-[#0F1720]">
+                    <span class="font-mono text-[11px] text-[#2B5F8A] font-bold">+</span>
+                    <span class="font-mono text-[11px] text-[#2B5F8A]">byte-bazaar.testnet</span>
+                    <button class="chip-remove w-4 h-4 ml-0.5 inline-flex items-center justify-center rounded-[2px] text-[#2B5F8A] transition-colors" title="Remove byte-bazaar.testnet">
+                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                  </div>
+
+                </div>
+
+                <!-- Add counterparty input -->
+                <div>
+                  <label for="add-counterparty" class="text-xs text-[#0F1720] font-medium uppercase font-mono tracking-wider block mb-1">Add counterparty</label>
+                  <div class="flex gap-2">
+                    <input 
+                      id="add-counterparty" 
+                      type="text" 
+                      placeholder="account id" 
+                      class="flex-1 bg-[#E9EEF3] border border-[#C3CDD6] rounded-[2px] px-3 py-2 font-mono text-sm text-[#0F1720] placeholder-[#55636F]/70 focus:bg-[#FFFFFF] transition-colors"
+                    />
+                    <button class="bg-[#F4F7FA] border border-[#C3CDD6] text-[#0F1720] px-3 py-2 text-xs font-mono uppercase tracking-wide rounded-[2px] hover:bg-[#E9EEF3] transition-colors">
+                      + Add
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Invariant Caption -->
+                <p class="text-[12px] text-[#55636F] leading-snug">
+                  An unlisted counterparty is refused with <code class="font-mono text-[#A83A2C] text-[11px]">counterparty_not_allowed</code> before any signature.
+                </p>
+
+              </div>
+            </div>
+          </section>
+
+          <!-- BOTTOM PANEL: PENDING CHANGE DIFF -->
+          <section class="bg-[#F4F7FA] border border-[#C3CDD6] rounded-[2px] p-5">
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-[#C3CDD6] text-xs font-mono">
+              <div class="flex items-center gap-2">
+                <span class="tracking-wider uppercase text-[#0F1720] font-medium">PENDING CHANGE</span>
+                <span class="text-[#55636F]">·</span>
+                <span class="text-[#2B5F8A]">DIFF SUMMARY (UNCOMMITTED)</span>
+              </div>
+              <span class="text-[#55636F]">CANONICAL PAYLOAD DELTA</span>
+            </div>
+
+            <!-- Diff Box -->
+            <div class="bg-[#E9EEF3] border border-[#C3CDD6] rounded-[2px] p-3 font-mono text-xs text-[#0F1720] space-y-1.5">
+              <div class="flex items-center gap-2 text-[#2E6F5E]">
+                <span class="w-4 font-bold select-none">+</span>
+                <span>byte-bazaar.testnet</span>
+                <span class="text-[11px] text-[#55636F] ml-auto">counterparty_allowlist.append()</span>
+              </div>
+              <div class="flex items-center gap-2 text-[#2B5F8A]">
+                <span class="w-4 font-bold select-none">-</span>
+                <span>per-transaction cap 250.00 → 300.00</span>
+                <span class="text-[11px] text-[#55636F] ml-auto">+50.00 USDC adjustment</span>
+              </div>
+              <div class="flex items-center gap-2 text-[#55636F]">
+                <span class="w-4 select-none"> </span>
+                <span>daily cap unchanged 1,000.00</span>
+                <span class="text-[11px] text-[#55636F] ml-auto">baseline ceiling retained</span>
+              </div>
+              <div class="pt-2 mt-2 border-t border-[#C3CDD6] text-[11px] text-[#55636F] flex items-center justify-between">
+                <span>effective from the next decision · current signature unaffected</span>
+                <span class="text-[#0F1720]">policy_hash: 0x6e28...bf41</span>
+              </div>
+            </div>
+
+            <!-- ACTION BAR & COMMIT CAPTION -->
+            <div class="mt-5 pt-4 border-t border-[#C3CDD6] flex items-center justify-between">
+              <div class="font-mono text-xs text-[#55636F]">
+                <span>signed by <span class="text-[#0F1720]">owner.testnet</span> · 1 transaction</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="bg-[#F4F7FA] border border-[#C3CDD6] text-[#0F1720] px-4 py-2 text-xs font-mono uppercase tracking-wide rounded-[2px] hover:bg-[#E9EEF3] transition-colors">
+                  Discard
+                </button>
+                <button class="bg-[#0F1720] text-[#F4F7FA] border border-[#0F1720] px-5 py-2 text-xs font-mono uppercase tracking-wide rounded-[2px] hover:bg-[#0F1720] transition-colors flex items-center gap-2">
+                  <span>Sign policy change</span>
+                  <span class="text-[#C3CDD6] font-normal">→</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- CHAIN OF CUSTODY NOTE FOOTER -->
+          <div class="bg-[#F4F7FA] border border-[#C3CDD6] rounded-[2px] p-3 text-xs text-[#55636F]">
+            <div class="flex items-baseline justify-between font-mono text-[11px] uppercase tracking-wide text-[#0F1720] mb-1">
+              <span>CHAIN OF CUSTODY RECORD · NEP-413</span>
+              <span class="text-[#55636F]">NOTARIAL SEAL #9412-TN</span>
+            </div>
+            <p class="leading-relaxed">
+              Every policy amendment commits to NEAR testnet via threshold keyholder witness. All past decision receipts retain immutable cryptographic validation against the policy state attested at decision time.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- RIGHT 4 COLUMNS: PROOF RAIL (MINIMUM 320PX, NEVER MOVES) -->
+        <aside class="col-span-4 flex flex-col gap-4">
+
+          <div class="bg-[#F4F7FA] border border-[#C3CDD6] rounded-[2px] p-4 flex flex-col gap-4">
+            
+            <!-- Proof rail header -->
+            <div class="flex items-center justify-between border-b border-[#C3CDD6] pb-2.5">
+              <div>
+                <span class="font-mono text-xs uppercase tracking-wider text-[#0F1720] font-bold block">PROOF RAIL</span>
+                <span class="text-[12px] text-[#55636F]">Most recent authorisation sequence</span>
+              </div>
+              <span class="font-mono text-[11px] px-2 py-0.5 border border-[#2B5F8A] text-[#2B5F8A] bg-[#E9EEF3] rounded-[2px] uppercase">
+                SIGNING IN FLIGHT
+              </span>
+            </div>
+
+            <!-- CELL 1: 1 READ (VERIFIED) -->
+            <div class="border border-[#C3CDD6] bg-[#E9EEF3] rounded-[2px] p-3">
+              <div class="flex items-center justify-between font-mono text-xs mb-1.5">
+                <span class="font-bold text-[#0F1720]">1 READ</span>
+                <span class="text-[#2E6F5E] flex items-center gap-1 font-medium">
+                  <span>✓</span>
+                  <span>verified</span>
+                </span>
+              </div>
+              <div class="text-[12px] text-[#55636F] mb-2 font-mono">
+                3 of 3 RPCs
+              </div>
+              <div class="bg-[#F4F7FA] border border-[#C3CDD6] px-2 py-1 rounded-[2px] font-mono text-[11px] text-[#0F1720] flex items-center justify-between">
+                <span>0x8f2c...41ae</span>
+                <button class="text-[#55636F] hover:text-[#0F1720]" title="Copy hash">
+                  <svg class="w-3 h-3 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="1"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- CELL 2: 2 ATTEST (VERIFIED WITH THE POLICY HASH) -->
+            <div class="border border-[#C3CDD6] bg-[#E9EEF3] rounded-[2px] p-3">
+              <div class="flex items-center justify-between font-mono text-xs mb-1.5">
+                <span class="font-bold text-[#0F1720]">2 ATTEST</span>
+                <span class="text-[#2E6F5E] flex items-center gap-1 font-medium">
+                  <span>✓</span>
+                  <span>verified</span>
+                </span>
+              </div>
+              <div class="text-[12px] text-[#55636F] mb-2 font-mono">
+                policy hash
+              </div>
+              <div class="bg-[#F4F7FA] border border-[#C3CDD6] px-2 py-1 rounded-[2px] font-mono text-[11px] text-[#0F1720] flex items-center justify-between">
+                <span>0x6e28...bf41</span>
+                <button class="text-[#55636F] hover:text-[#0F1720]" title="Copy hash">
+                  <svg class="w-3 h-3 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="1"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- CELL 3: 3 SIGN (PULSING DOT AND "IN FLIGHT") -->
+            <div class="border border-[#2B5F8A] bg-[#E9EEF3] rounded-[2px] p-3">
+              <div class="flex items-center justify-between font-mono text-xs mb-1.5">
+                <span class="font-bold text-[#0F1720]">3 SIGN</span>
+                <span class="text-[#2B5F8A] flex items-center gap-1.5 font-medium">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#2B5F8A] pulse-dot"></span>
+                  <span>in flight</span>
+                </span>
+              </div>
+              <div class="text-[12px] text-[#55636F] mb-2 font-mono">
+                11 of 17 threshold
+              </div>
+              <div class="bg-[#F4F7FA] border border-[#C3CDD6] px-2 py-1 rounded-[2px] font-mono text-[11px] text-[#2B5F8A] flex items-center justify-between">
+                <span>sig ref: 0x5b0e...77c1</span>
+                <button class="text-[#55636F] hover:text-[#0F1720]" title="Copy reference">
+                  <svg class="w-3 h-3 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="1"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- CELL 4: 4 SETTLE (EM DASH, NOT REACHED) -->
+            <div class="border border-[#C3CDD6] bg-[#E9EEF3] rounded-[2px] p-3">
+              <div class="flex items-center justify-between font-mono text-xs mb-1.5">
+                <span class="font-bold text-[#0F1720]">4 SETTLE</span>
+                <span class="text-[#55636F] font-mono">—</span>
+              </div>
+              <div class="text-[12px] text-[#55636F] font-mono">
+                near-testnet
+              </div>
+              <div class="mt-2 py-1 text-center font-mono text-xs text-[#55636F]">
+                —
+              </div>
+            </div>
+
+            <!-- PROOF RAIL METADATA BLOCK -->
+            <div class="pt-3 border-t border-[#C3CDD6] flex flex-col gap-1.5 font-mono text-[11px]">
+              <div class="flex justify-between">
+                <span class="text-[#55636F]">DISPUTE WINDOW:</span>
+                <span class="text-[#0F1720] tnum">0 BLOCKS REMAINING</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[#55636F]">COMMITMENT ROOT:</span>
+                <span class="text-[#0F1720]">0x9d31...0a44</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[#55636F]">NOTARIAL SEAL:</span>
+                <span class="text-[#0F1720]">#9412-TN</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-[#55636F]">VERIFIER STATUS:</span>
+                <span class="text-[#2B5F8A] flex items-center gap-1">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#2B5F8A] pulse-dot"></span>
+                  <span>AWAITING QUORUM</span>
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- NOTARIAL AMENDMENT SPECIFICATION NOTE -->
+          <div class="bg-[#F4F7FA] border border-[#C3CDD6] rounded-[2px] p-3 text-xs text-[#55636F]">
+            <span class="font-mono text-[11px] text-[#0F1720] uppercase font-semibold block mb-1">INVARIANT PROTECTION</span>
+            <p class="leading-relaxed">
+              Policy modifications are atomic contract transactions. An agent running concurrently executes under the previous attested policy until the state settlement receipt is finalized at block height.
+            </p>
+          </div>
+
+        </aside>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- FOOTER STRIP (exact spec) -->
+  <footer class="w-full bg-[#E9EEF3] border-t border-[#C3CDD6] text-xs font-mono text-[#55636F] px-6 py-2.5 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span>active path: <span class="text-[#0F1720]">RPC_QUORUM</span></span>
+      <span class="text-[#C3CDD6]">·</span>
+      <span>no mainnet</span>
+      <span class="text-[#C3CDD6]">·</span>
+      <span class="text-[#A9660F] font-medium">testnet only</span>
+    </div>
+    <div class="flex items-center gap-4 text-[11px]">
+      <span class="flex items-center gap-1.5">
+        <kbd class="px-1.5 py-0.5 border border-[#C3CDD6] bg-[#F4F7FA] text-[#0F1720] rounded-[2px]">S</kbd>
+        <span>sign change</span>
+      </span>
+      <span class="flex items-center gap-1.5">
+        <kbd class="px-1.5 py-0.5 border border-[#C3CDD6] bg-[#F4F7FA] text-[#0F1720] rounded-[2px]">D</kbd>
+        <span>discard draft</span>
+      </span>
+      <span class="flex items-center gap-1.5">
+        <kbd class="px-1.5 py-0.5 border border-[#C3CDD6] bg-[#F4F7FA] text-[#0F1720] rounded-[2px]">/</kbd>
+        <span>search records</span>
+      </span>
+      <span class="flex items-center gap-1.5">
+        <kbd class="px-1.5 py-0.5 border border-[#C3CDD6] bg-[#F4F7FA] text-[#0F1720] rounded-[2px]">ESC</kbd>
+        <span>back to list</span>
+      </span>
+    </div>
+  </footer>
+
+</body>
+</html>
