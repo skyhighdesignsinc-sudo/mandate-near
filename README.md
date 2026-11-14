@@ -1,7 +1,9 @@
 # Mandate — authority that is enforced, recorded, and reversible
 
-An agent gets a budget and an allowlist that the key itself cannot exceed, an attested reason
-for every spend, and a one-call kill switch that also deletes the agent's key. Since D-024 the
+An agent gets a budget and an allowlist that the key itself cannot exceed, a reason for every
+spend that the caller supplies as hashes and the contract checks against the intent (a hash
+comparison, not a signature check — C24), and a one-call kill switch that also deletes the
+agent's key. Since D-024 the
 contract also has a challenge window on recorded settlements; it was withdrawn on 2026-11-13
 after its own demo failed, fixed and redeployed on 2026-11-14, and restored only once the
 end-to-end run passed (C26).
