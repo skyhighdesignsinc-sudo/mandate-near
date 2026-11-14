@@ -145,7 +145,7 @@ Every frame is a replay of a contract run or a contract view; none of them is a 
 The console is served statically, with no server and no key:
 
 - **https://skyhighdesignsinc-sudo.github.io/mandate-near/** — the same page the video records.
-- `media/mandate-journey.mp4` — 57 seconds, one journey: a 12.00 spend authorised, a 45.00 spend refused with `per_counterparty_day_exceeded`, balance unchanged at 88.00.
+- `media/mandate-journey.mp4` — 55 seconds: a 12.00 spend authorised, a 7.00 call against an attested 8.00 refused with `attestation_mismatch`, then every hash recomputed in the browser.
 
 The page reads three JSON files produced by the contract (`snapshot.json`, `docs.json`,
 `chain.json`). `chain.json` holds the hashes of real testnet transactions; every one of them

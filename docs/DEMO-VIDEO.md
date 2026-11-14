@@ -22,39 +22,38 @@ watched by a judge who has forty entries to read.
 - 1280×720 minimum, 30 fps, no music, no intro card longer than one second.
 - Terminal at 16–18 pt with a dark theme; browser at 100% zoom, one tab.
 - Record the commands as typed, at human speed, and cut dead time; do not fake output.
-- Captions burned in for the two numbers that matter (86.4 ms; 6 of 10 refused).
-- End on the repository URL for three seconds, so a screenshot of the last frame is a link.
+- The yellow caption on each shot is the number or code that matters; the narration names the same thing.
+- Keep the repository URL on screen as a watermark, so any pause is a link.
 
-## Script A — `baseline` (80s)
+## Film A — `baseline`, 59 s
 
-Voice: plain, no adjectives. The finding is the story; the product is the evidence.
+Voice: `en-US-AndrewNeural`, +3%. One pass over the public judge view; the yellow box
+follows the sentence, and the repo URL is on screen for the whole film.
 
-| Time | On screen | Narration |
+| Start | On screen, boxed | Line |
 |---|---|---|
-| 0:00–0:08 | Terminal, cursor blinking. Overlay: "Twelve teams shipped an agent spending cap. We measured one." | "Every entry in this track ships a spending cap. Almost nobody measures one. This is a contract on NEAR testnet, and a script that tries to break its caps." |
-| 0:08–0:22 | `make thesis ACCOUNT=mandate-hackaton-7c1a.testnet` → `state.json` prints mandates, settled count, block height. | "First it reads the live contract, no signing, just views. Four settled mandates, and the block height it read them at." |
-| 0:22–0:42 | `node thesis/tools/experiment.mjs --account …` → ten cases, each line `ok`, codes and hashes. | "Then four policy shapes, ten attempts: a transaction inside the cap, one over it, a zero amount, an unlisted vendor, a decision whose hash does not match, and a spend made under the previous policy revision. Six are refused, and every refusal has a typed code and a transaction hash." |
-| 0:42–0:52 | Nearblocks tab: open one refused transaction. | "This is one of them, on the explorer. Same contract, same block, `per_day_exceeded`." |
-| 0:52–1:08 | Split screen: the arithmetic `20,764,932,355 × 86,400,000 = 1,794,090,155,472,000,000 ns`, then the pre-fix row `authorised`, then the post-fix row `per_day_exceeded`. | "And here is why the matrix exists. The first run passed a spend it should have refused. The day counter divided nanoseconds by a millisecond constant, so a day was 86.4 milliseconds. A twenty-five dollar daily cap authorised thirty dollars across two blocks. We fixed it, redeployed, and re-measured." |
-| 1:08–1:18 | `make thesis-e2e` → eight `ok` lines, `artefacts agree`. | "This command fails if the dataset, the JSON files and the numbers in the write-up ever stop matching. A measurement that cannot fail is marketing." |
-| 1:18–1:26 | Repo URL, full screen. | "The failing transaction is public. So is the fix. Run it yourself." |
+| 0:00.4 | the four counts: 24 / 8 / 16 / 24 resolving | "This is Baseline. We measured an agent spending policy instead of describing it: twenty-four spends against a contract on NEAR testnet. Eight execute. Sixteen are refused, each with a typed code inside a failed transaction." |
+| 0:15.0 | the matrix header, "click any row" | "The matrix is the run, case by case. Click any row to see the amount, the code and the hash it left behind." |
+| 0:22.8 | the counterparty row opened: 8.00, `per_counterparty_day_exceeded`, hash | "This is the counterparty ceiling: eight dollars to one vendor passes, the next eight is refused per counterparty day, and that refusal opens on the explorer." |
+| 0:33.1 | the daily row opened: 10.00, `per_day_exceeded` | "The first run also passed a spend it should have refused. The day counter treated nanoseconds as milliseconds, so a day was eighty-six milliseconds, and a twenty-five dollar cap authorised thirty. We fixed it, redeployed, and re-measured." |
+| 0:48.1 | the method section, both verifier commands | "The repository re-checks every hash and every figure, and fails when they drift. A policy you can test, not just read. That is the submission." |
 
-## Script B — `mandate` (78s)
+## Film B — `mandate`, 55 s
 
-Voice: the owner, not the developer.
+Voice: same. The desk is a **replay of one recorded run** and says so on screen; the film
+does not present it as a live chain read. Two passes: the desk (lines 1–4), then the verify
+page (line 5), because a hash-route change can complete in the DOM before the recorder
+finishes writing the old view.
 
-| Time | On screen | Narration |
+| Start | On screen, boxed | Line |
 |---|---|---|
-| 0:00–0:08 | Console at the desk, balance 100.00. | "An agent needs to pay suppliers. The usual answer is to give it a key, which means one bad instruction can move everything." |
-| 0:08–0:20 | Point at `mandate.testnet`, the `list_mandates` table, the `replay` label. | "Here the money is a contract balance. The agent can only ask it to pay, and every figure on screen is a contract view, not a mock." |
-| 0:20–0:34 | Step the replay to event 3: an authorised spend of 12 USDC, the reason and hash shown. | "A spend inside the policy executes. The reason it was made is an attested decision, and its hash is part of what the contract checks." |
-| 0:34–0:48 | Step to event 7: `attestation_mismatch`, balance unchanged, rail says refused. | "This one has a matching amount and an allowed vendor, and still fails, because the attested decision does not match the payment. The balance does not move." |
-| 0:48–1:00 | Verify route: hashes recomputed in the browser, `agree`. | "Every hash is recomputed in your browser, so you do not have to trust this page." |
-| 1:00–1:12 | Chain card: open the real failed transaction on Nearblocks. | "This refusal is a real transaction on testnet. Open it." |
-| 1:12–1:22 | Events 13 then 14: `policy_changed`. | "And when the owner changes the policy, a decision taken under the old one is refused rather than executed under the new limits." |
-| 1:22–1:30 | `make dev` prompt and repo URL. | "One command, no keys. The contract is on testnet." |
+| 0:00.4 | the desk at the start: 100.00 held, 0.00 authorised | "This is Mandate. An agent gets a budget held by a NEAR contract, and a key that can only ask it to pay, not your account key. Every spend has to match a policy and an attested decision." |
+| 0:12.4 | the strip after the first spend: 88.00 left, 12.00 today | "The desk is one recorded run. Every figure is a contract view: eighty-eight dollars left, twelve authorised today, and the policy revision the agent is bound to." |
+| 0:23.4 | the authorised event card: 12.00 USDC, intent/decision/policy hashes | "This spend is inside the policy, so it executes. The reason and the decision hash are part of the record, and the transaction is on testnet." |
+| 0:32.7 | event 7: `attestation_mismatch`, "attested 8.00, call 7.00" | "This call asks for seven dollars against an attested eight. The hashes part company, so the contract refuses with attestation mismatch, and the balance does not move." |
+| 0:43.0 | the verify table: every row recomputed, `AGREES` | "Verify recomputes the hashes in your browser from the committed run, and every row opens on the explorer. Four transactions, one refusal, no keys. That is the whole claim." |
 
-## What neither script says
+## What neither film says
 
 - Not "unhackable", "trustless", "guaranteed", or "only NEAR can". The field has twelve
   entries with the same mechanic (`UNIQUENESS-AUDIT.md` §4.2).
