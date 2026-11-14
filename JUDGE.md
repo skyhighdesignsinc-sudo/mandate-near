@@ -21,6 +21,13 @@ whether products like it refuse what they claim.
 
 All on testnet, all reachable at `https://testnet.nearblocks.io/txns/<hash>`.
 
+## Open the console before you read anything
+
+**https://skyhighdesignsinc-sudo.github.io/mandate-near/** — static page, no server, no key.
+Step the run with the arrow keys; event 02 is a 45.00 attempt refused against a 40.00
+per-counterparty ceiling, with the balance sitting unchanged at 88.00.
+A 61-second recording of that same page is at `media/mandate-journey.mp4`.
+
 ## One command each
 
 ```bash
