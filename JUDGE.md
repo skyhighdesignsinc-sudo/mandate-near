@@ -48,7 +48,7 @@ lists every finding that is fixed and every one that is not.
 **https://skyhighdesignsinc-sudo.github.io/mandate-near/** — static page, no server, no key.
 Step the run with the arrow keys; event 02 is a 45.00 attempt refused against a 40.00
 per-counterparty ceiling, with the balance sitting unchanged at 88.00.
-A 61-second recording of that same page is at `media/mandate-journey.mp4`.
+A 57-second recording of that same page is at `media/mandate-journey.mp4`.
 
 ## One command each
 

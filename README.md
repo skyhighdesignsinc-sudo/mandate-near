@@ -129,11 +129,10 @@ key scoping would protect the agent's own key but not the contract: any account 
 `someone-else-agent.testnet` as its agent, the owner calls `spend` (`3aqb32W9…`), the contract
 answers `unauthorized` and the balance is unchanged.
 
-Contract tests: **37**.
+Contract tests: **39**.
 
 ## Media
 
-- `media/mandate-demo.mp4` — 71-second narrated walkthrough of the replay, the refusal list, the mandate record and the verify route.
 - `media/01-desk.png` — the recorded run, event by event, with the proof rail.
 - `media/02-mandate.png` — policy revisions and the limits in force at each block.
 - `media/03-refusals.png` — the refusal vocabulary, one code per line.
@@ -146,7 +145,7 @@ Every frame is a replay of a contract run or a contract view; none of them is a 
 The console is served statically, with no server and no key:
 
 - **https://skyhighdesignsinc-sudo.github.io/mandate-near/** — the same page the video records.
-- `media/mandate-journey.mp4` — 61 seconds, one journey: a 12.00 spend authorised, a 45.00 spend refused with `per_counterparty_day_exceeded`, balance unchanged at 88.00.
+- `media/mandate-journey.mp4` — 57 seconds, one journey: a 12.00 spend authorised, a 45.00 spend refused with `per_counterparty_day_exceeded`, balance unchanged at 88.00.
 
 The page reads three JSON files produced by the contract (`snapshot.json`, `docs.json`,
 `chain.json`). `chain.json` holds the hashes of real testnet transactions; every one of them
