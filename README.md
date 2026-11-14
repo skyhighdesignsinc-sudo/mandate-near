@@ -107,3 +107,13 @@ key scoping would protect the agent's own key but not the contract: any account 
 answers `unauthorized` and the balance is unchanged.
 
 Contract tests: **37**.
+
+## Media
+
+- `media/mandate-demo.mp4` — 71-second narrated walkthrough of the replay, the refusal list, the mandate record and the verify route.
+- `media/01-desk.png` — the recorded run, event by event, with the proof rail.
+- `media/02-mandate.png` — policy revisions and the limits in force at each block.
+- `media/03-refusals.png` — the refusal vocabulary, one code per line.
+- `media/04-verify.png` — the hashes a reader can recompute in the browser.
+
+Every frame is a replay of a contract run or a contract view; none of them is a mock.
