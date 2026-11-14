@@ -20,7 +20,7 @@ mandate/
     policy.rs     the policy object, its hash, its validation
     errors.rs     PolicyViolation + the frozen code list
     util.rs       sha256, intent_hash, storage helpers
-    tests.rs      27 unit tests, one per failure path plus the happy paths
+    tests.rs      39 unit tests, one per failure path plus the happy paths
     demo.rs       the fifteen-event scenario (writes the snapshot)
   console/
     index.html    shell: context bar, tabs, canvas, proof rail
