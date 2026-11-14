@@ -89,6 +89,12 @@ committed replay.
 ## What this does not claim
 
 - **No mainnet, no audit, no custody.** Testnet prototype for a hackathon.
+- **The unit on screen is a ledger unit, not a token.** `balance` and the policy ceilings
+  are integers the contract keeps; `create_mandate` credits the attached deposit to that
+  integer and nothing in this build pays it out. There is no NEP-141 integration, no
+  withdrawal method and no transfer to a vendor, so **do not deposit funds you expect to
+  recover** (review finding M-02). The 88.00 USDC on the desk is a label with six decimals,
+  not a balance an exchange would honour.
 - **The attestor is a trusted component in this build.** The contract compares a hash; it does
   not verify Intel's signature. C24 says so.
 - **The dispute log has no console surface yet.** `list_contests` is a contract view and the
