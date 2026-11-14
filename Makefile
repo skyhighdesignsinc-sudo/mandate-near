@@ -95,6 +95,10 @@ diagrams:
 contest-demo:
 	@$(NODE) tools/contest-demo.mjs $(ARGS)
 
+# D-028: one intent, one debit; one tx ref, one settlement; close and withdraw.
+intent-demo:
+	@$(NODE) tools/intent-demo.mjs $(ARGS)
+
 # F-3: what the field's own published accounts hold — access keys, read-only.
 # The acceptance journeys, written as user goals rather than component checks.
 uat:

@@ -27,7 +27,11 @@ import {
   encodeTransaction,
 } from 'near-api-js';
 
-export const RPC = process.env.NEAR_RPC ?? 'https://rpc.testnet.near.org';
+// rpc.testnet.near.org began answering every request with HTTP 429 and a
+// "THIS ENDPOINT IS DEPRECATED" warning on 2026-11-14, which broke every probe
+// mid-run. FastNear's testnet endpoint is the documented successor and is the
+// default here; NEAR_RPC still overrides it.
+export const RPC = process.env.NEAR_RPC ?? 'https://rpc.testnet.fastnear.com';
 export const FAUCET = process.env.NEAR_FAUCET ?? 'https://helper.testnet.near.org/account';
 export const EXPLORER = 'https://testnet.nearblocks.io';
 

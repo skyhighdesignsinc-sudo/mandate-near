@@ -367,11 +367,18 @@ against the deployed contract; the fourth needs a settlement older than 100 bloc
 |---|---|---|
 | Ask for more than `per_tx` | `per_tx_exceeded` | the cap is checked before the counters move |
 | Send a decision hash that was already used | `decision_replayed` | one recorded decision authorises one payment |
-| Call `spend` from an account that is not the mandate's agent | `unauthorized` | the agent alone may ask; the owner funds and amends, it does not spend directly (C27, live `3aqb32W9…`) |
+| Call `spend` twice for the same chain, amount, vendor and asset | `intent_consumed` | one intent authorises one debit, so a second call cannot pay twice against a settlement that can only record once (C28, live `7CcArdAP…`) |
+| `settle` a second mandate with a tx reference already used | `tx_replayed` | the contract cannot fetch the foreign chain, but it can refuse to count the same hash twice (C29, live `74hPPwd1…`) |
+| Call `spend` from an account that is not the mandate's agent | `unauthorized` | the agent alone may ask; the owner funds and amends, it does not spend directly (C27, unit test only — the earlier live link did not resolve and was removed) |
 | Contest a settlement more than 100 blocks old | `challenge_window_closed` | the window is bounded by block height, not by a clock the caller supplies |
 
 A fifth attempt belongs to the owner rather than an attacker: `contest` the same settlement
 twice and the second answer is `already_contested`.
+
+Two owner walks are the other direction — money coming out rather than an attack going in:
+close a mandate (`close_mandate`) and its balance is released, then `withdraw` pays the part of
+the contract balance that no open mandate reserves. Asking for more than that free part answers
+`balance_reserved` (C30, live `X128ZuNo…`, `FNT9vHo8…`, `ZS3FuqsL…`).
 
 If any of these returns something else, the claim table is wrong and the repository should be
 read as broken rather than as "close enough".

@@ -395,3 +395,46 @@ resolve on either RPC.
 
 **Revisit trigger.** A machine with `dlltool` or Docker: run `cargo test`, paste the count
 into `docs/CLAIMS.md` C12, and delete this line if it disagrees.
+
+## D-028 — 2026-11-14 — close five review findings in logic, without a state migration
+
+**Context.** The round-2 audit (`docs/AUDIT-2026-11-14.md`) left five findings open because they
+looked like state-shape changes: one intent could debit repeatedly (M-05), a foreign tx reference
+could settle two authorisations (M-08), used decisions and request ids were global (M-10), a
+deposit had no way out except a contest (M-02), and permissionless creation was bounded only by a
+10,000-mandate cap (M-06). The deployed account holds 107 live mandates and judges are reading it,
+so a deploy that cannot deserialize that state would end the submission.
+
+**Options.** (a) Add fields, write an `OldContract` migration, and test it — untestable here, and a
+mistake bricks the account mid-judging. (b) Leave the findings open. (c) Fix them inside the
+structures that already exist.
+
+**Choice: (c).** None of the five needed a new field. `Contract.used_decisions` is a
+`BTreeMap<String, bool>` and accepts domain-separated keys; `Mandate.authorised_amount` already
+records which intents were debited; `Mandate.balance` is already the reserve. So:
+
+- `spend` and `approve` refuse an intent already in `authorised_amount` or `settled` — `intent_consumed`.
+- `settle` writes `tx|<tx_ref>` into `used_decisions` and refuses a second claim — `tx_replayed`.
+- Decision hashes are keyed `"<mandate_id>|<hash>"`; the bare hash is still checked and written, so
+  mandates created before this change keep blocking their own replays.
+- `close_mandate` zeroes a balance and `withdraw` pays the owner everything above storage and the
+  sum of open balances; both are new methods, so nothing stored changes shape.
+- `MAX_MANDATES` drops from 10,000 to 250: creation is still permissionless, the ceiling is now a
+  number this deployment can reach.
+- `roll_day` treats a stored `day_index` more than 30,000 days ahead of the chain's day as the old
+  scale and resets it, which repairs the pre-D-024 mandates that could never roll again.
+
+**Why it is safe.** Borsh layout is untouched: the same bytes deserialize. Proven by deploying
+code-only (`G2x3DrA8…`, wasm sha256 `3fb2f82f…`) and reading all 107 mandates back before running
+anything (`list_mandates` served 107 rows). The probes then created `m114`/`m115` and passed 9/9.
+
+**Cost, stated.** Scoped keys mean a decision hash used before this deploy is only remembered under
+its bare key; the contract checks both, so old replays still fail. Re-buying the same amount from
+the same vendor now needs a distinct intent, which this build does not mint — the README says so.
+
+**Also in this batch.** The public testnet RPC (`rpc.testnet.near.org`) began answering every call
+with HTTP 429 and "THIS ENDPOINT IS DEPRECATED" on 2026-11-14, breaking probes mid-run. `near-tx.mjs`
+defaults to `https://rpc.testnet.fastnear.com`; `NEAR_RPC` still overrides.
+
+**Revisit when.** A verifier exists for the attestor (M-03), or a migration can be tested against a
+sandbox — then the intent tuple can carry a nonce and the old-scale day rule can be deleted.

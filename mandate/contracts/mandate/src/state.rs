@@ -91,8 +91,17 @@ impl Mandate {
     }
 
     /// Advance the rolling window if the calendar day changed.
+    ///
+    /// The second condition repairs mandates written before D-028. Their
+    /// `day_index` was stored on a finer scale than `block_timestamp / 86_400e9`,
+    /// so it sits far in the future on the current scale and `day_index >
+    /// self.day_index` never fired: the daily counter quietly became a lifetime
+    /// counter and the mandate could never spend again. A stored value more than
+    /// 30,000 days ahead of the chain's own day cannot be a real day count, so it
+    /// is stale and reset. The check is monotone on the new scale: once a mandate
+    /// has rolled once, its `day_index` is a real day and the branch stops firing.
     pub fn roll_day(&mut self, day_index: u64) {
-        if day_index > self.day_index {
+        if day_index > self.day_index || self.day_index > day_index.saturating_add(30_000) {
             self.day_index = day_index;
             self.spent_day = 0;
             self.spent_by_counterparty.clear();

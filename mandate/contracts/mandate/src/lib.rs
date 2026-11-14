@@ -47,8 +47,14 @@ use crate::util::intent_hash;
 // and per-counterparty ceilings never bound. Fixed 2026-11-07 (D-020); the
 // regression is `daily_ceiling_spans_blocks` in `tests.rs`.
 const DAY_NS: u64 = 86_400_000_000_000;
-/// Guards against a runaway loop of mandates in one deployment.
-const MAX_MANDATES: u64 = 10_000;
+/// Guards against a runaway loop of mandates in one deployment (M-06).
+///
+/// `create_mandate` is permissionless and the deposit is the ledger balance, not
+/// a storage payment, so every mandate costs the account storage without paying
+/// for it. The cap is the mitigation that exists: it was 10_000, which is far
+/// more griefing than this account will ever serve, and it is now a number the
+/// demo can actually reach, so the ceiling is testable rather than theoretical.
+const MAX_MANDATES: u64 = 250;
 
 /// How long a recorded settlement stays contestable, in blocks (D-024). A block
 /// height rather than a timestamp: the chain already agrees on it, and a contest
@@ -186,10 +192,18 @@ impl Contract {
     /// documents pause; none documents key removal (see UNIQUENESS-AUDIT 4.4).
     ///
     /// The owner supplies the key, because a contract cannot read its own key
-    /// set from inside a call. The guarantee is therefore exact and narrow:
-    /// after this receipt, that key cannot sign for this account. Deleting a key
-    /// the owner does not control is a protocol no-op, not an escalation.
+    /// set from inside a call.
+    ///
+    /// **Who may delete.** `DeleteKey` acts on *this contract's* account, so the
+    /// authority to issue it is the contract owner, not the owner of one mandate.
+    /// `create_mandate` is permissionless, so a per-mandate owner check alone let
+    /// any account create a mandate and then delete the contract account's keys
+    /// (M-01, 2026-11-14 review: the live account had one full-access key, so that
+    /// call would have frozen every mandate and the demo with them). A mandate
+    /// owner who is not the contract owner still suspends their own mandate; the
+    /// key deletion is logged as refused instead of executed.
     pub fn revoke_key(&mut self, id: MandateId, key: PublicKey) {
+        let contract_owner = self.owner.clone();
         let mandate = match self.mandates.get_mut(&id) {
             Some(m) => m,
             None => env::panic_str(&PolicyViolation::new("not_found").to_string()),
@@ -198,11 +212,19 @@ impl Contract {
         let agent = mandate.agent.clone();
         mandate.suspended = true;
         env::log_str(&format!("mandate_suspended: id={}", id));
-        env::log_str(&format!(
-            "agent_key_deleted: id={} agent={} key={}",
-            id, agent, key
-        ));
-        let _ = Promise::new(env::current_account_id()).delete_key(key);
+        if env::predecessor_account_id() == contract_owner {
+            env::log_str(&format!(
+                "agent_key_deleted: id={} agent={} key={}",
+                id, agent, key
+            ));
+            let _ = Promise::new(env::current_account_id()).delete_key(key);
+        } else {
+            env::log_str(&format!(
+                "violation: key_delete_requires_contract_owner id={} caller={}",
+                id,
+                env::predecessor_account_id()
+            ));
+        }
     }
 
     pub fn resume(&mut self, id: MandateId) {
@@ -279,6 +301,33 @@ impl Contract {
         }
         if mandate.balance < request.amount {
             env::panic_str(&PolicyViolation::new("budget_exhausted").to_string());
+        }
+        // The queue could hold two requests for the same intent under different
+        // decisions; approving both would debit twice against one settlement slot.
+        if mandate.settled.contains_key(&request.intent_hash)
+            || mandate.authorised_amount.contains_key(&request.intent_hash)
+        {
+            env::panic_str(&PolicyViolation::new("intent_consumed").to_string());
+        }
+
+        // The request was checked when it was raised; approval is a second debit
+        // and has to re-check the limits it can now violate (M-04). Without this,
+        // a queue of escalations each passed on its own and every one of them was
+        // added to the same day's counter.
+        let day_index = env::block_timestamp() / DAY_NS;
+        mandate.roll_day(day_index);
+        if mandate.policy.expires_at_block != 0
+            && env::block_height() > mandate.policy.expires_at_block
+        {
+            env::panic_str(&PolicyViolation::new("mandate_expired").to_string());
+        }
+        if mandate.spent_day + request.amount > mandate.policy.per_day.0 {
+            env::panic_str(&PolicyViolation::new("per_day_exceeded").to_string());
+        }
+        let spent_key = Mandate::counterparty_key(&request.chain, &request.vendor);
+        let spent_here = *mandate.spent_by_counterparty.get(&spent_key).unwrap_or(&0);
+        if spent_here + request.amount > mandate.policy.per_counterparty_day.0 {
+            env::panic_str(&PolicyViolation::new("per_counterparty_day_exceeded").to_string());
         }
 
         // Recorded before the debit so `settle` can find the amount later; the
@@ -399,15 +448,31 @@ impl Contract {
 
         check_attestation(
             &mut self.used_decisions,
+            &id,
             &mandate.policy,
             &mandate.policy_hash,
             &attestation,
             &intent,
         );
 
+        // One intent authorises one debit, ever (M-05). Without this the same
+        // (chain, amount, vendor, asset) tuple could be debited again with a fresh
+        // decision hash, while `settle` — keyed by the intent — could only ever
+        // record the first one. The second debit had no settlement to read, so the
+        // mandate paid twice and the rail showed one payment. Re-buying the same
+        // amount from the same vendor needs a distinct intent, which this build
+        // does not mint; that limit is stated in the README rather than hidden.
+        if mandate.settled.contains_key(&intent) || mandate.authorised_amount.contains_key(&intent)
+        {
+            env::panic_str(&PolicyViolation::new("intent_consumed").to_string());
+        }
+
         // Approval is a separate on-chain request (D-005), never a paused call.
         if value > mandate.policy.escalate_over.0 {
             let request_id = format!("{}:{}", id, intent);
+            if self.pending.contains_key(&request_id) {
+                env::panic_str(&PolicyViolation::new("request_pending").to_string());
+            }
             self.pending.insert(
                 request_id.clone(),
                 PendingRequest {
@@ -469,8 +534,16 @@ impl Contract {
         if env::predecessor_account_id() != self.attestor {
             env::panic_str(&PolicyViolation::new("attestor_only").to_string());
         }
-        if tx_ref.trim().is_empty() {
+        if tx_ref.trim().is_empty() || intent.trim().is_empty() {
             env::panic_str(&PolicyViolation::new("attestation_mismatch").to_string());
+        }
+        // A foreign transaction reference settles one authorisation. Recording the
+        // same reference twice would let two mandates claim one payment (M-08):
+        // the contract cannot fetch the foreign chain, but it can refuse to count
+        // the same hash twice, which is the part it can know.
+        let tx_key = format!("tx|{}", tx_ref);
+        if self.used_decisions.contains_key(&tx_key) {
+            env::panic_str(&PolicyViolation::new("tx_replayed").to_string());
         }
         let mandate = match self.mandates.get_mut(&id) {
             Some(m) => m,
@@ -495,6 +568,7 @@ impl Contract {
                 contest: None,
             },
         );
+        self.used_decisions.insert(tx_key, true);
         env::log_str(&format!(
             "spend_settled: id={} intent_hash={} tx={} amount={} block={}",
             id,
@@ -559,13 +633,79 @@ impl Contract {
 
         mandate.balance += amount;
         mandate.spent_total = mandate.spent_total.saturating_sub(amount);
-        mandate.spent_day = mandate.spent_day.saturating_sub(amount);
+        // `spent_day` is deliberately NOT rewound. It was, and that made the daily
+        // ceiling refillable by the owner: spend, contest, spend again, same day
+        // (M-07 / D-026). The money comes back; the day's allowance stays spent,
+        // because it was spent.
+        //
+        // The per-counterparty counter is not rewound either, for the same reason.
+        // Both counters therefore agree with the sentence the README has always
+        // carried, and `a_contest_does_not_free_the_daily_ceiling` holds them to it.
 
         env::log_str(&format!(
             "settlement_contested: id={} intent_hash={} reason={} amount={} block={} evidence={}",
             id, intent, reason, amount, block, evidence_hash
         ));
         snapshot
+    }
+
+    /// Close a mandate and release its balance (M-02). Owner only.
+    ///
+    /// Until this existed, a deposit could only ever leave through `contest`, so
+    /// "the balance is yours" was true on the ledger and false in practice. Closing
+    /// sets the balance to zero and suspends the mandate: the funds stop being
+    /// reserved and become withdrawable below. It does not touch a settlement that
+    /// is still open — a mandate with a queued escalation must be rejected first,
+    /// because closing it would strand a request the agent is waiting on.
+    pub fn close_mandate(&mut self, id: MandateId) -> U128 {
+        if self.pending.values().any(|p| p.mandate_id == id) {
+            env::panic_str(&PolicyViolation::new("request_pending").to_string());
+        }
+        let mandate = match self.mandates.get_mut(&id) {
+            Some(m) => m,
+            None => env::panic_str(&PolicyViolation::new("not_found").to_string()),
+        };
+        assert_owner(mandate);
+        let released = mandate.balance;
+        mandate.balance = 0;
+        mandate.suspended = true;
+        env::log_str(&format!(
+            "mandate_closed: id={} released={} owner={}",
+            id, released, mandate.owner
+        ));
+        U128(released)
+    }
+
+    /// Pay the contract owner the part of the account balance that no mandate
+    /// reserves (M-02). Owner only.
+    ///
+    /// Reserved means the sum of every open mandate's balance. Free means the
+    /// account balance minus storage stake minus that reserve, so a withdrawal can
+    /// never hand out money an agent could still be authorised to spend, and can
+    /// never push the account below its own storage. Close a mandate first to move
+    /// its balance from reserved to free.
+    pub fn withdraw(&mut self, amount: U128) -> U128 {
+        if env::predecessor_account_id() != self.owner {
+            env::panic_str(&PolicyViolation::new("owner_only").to_string());
+        }
+        let reserved: u128 = self.mandates.values().map(|m| m.balance).sum();
+        let storage = env::storage_byte_cost().as_yoctonear()
+            * env::storage_usage() as u128;
+        let free = env::account_balance()
+            .as_yoctonear()
+            .saturating_sub(storage)
+            .saturating_sub(reserved);
+        if amount.0 == 0 || amount.0 > free {
+            env::panic_str(&PolicyViolation::new("balance_reserved").to_string());
+        }
+        let owner = self.owner.clone();
+        let _ = Promise::new(owner.clone())
+            .transfer(near_sdk::NearToken::from_yoctonear(amount.0));
+        env::log_str(&format!(
+            "owner_withdrew: to={} amount={} free_before={} reserved={}",
+            owner, amount.0, free, reserved
+        ));
+        U128(free - amount.0)
     }
 
     // ---------------------------------------------------------------- views
@@ -710,6 +850,7 @@ fn mandate_view(m: &Mandate) -> MandateView {
 
 fn check_attestation(
     used_decisions: &mut BTreeMap<String, bool>,
+    mandate_id: &str,
     policy: &Policy,
     mandate_policy: &str,
     att: &Attestation,
@@ -738,7 +879,13 @@ fn check_attestation(
                 .to_string(),
         );
     }
-    if used_decisions.contains_key(&att.decision_hash) {
+    // Scoped by mandate (M-10): a global key let one mandate's decision consume
+    // another's, so a hash used on m3 could not be used on m4 and the refusal
+    // blamed the wrong caller. The bare key is still checked and still written,
+    // because mandates created before this change recorded their decisions that
+    // way and their history must keep blocking a replay.
+    let scoped = format!("{}|{}", mandate_id, att.decision_hash);
+    if used_decisions.contains_key(&scoped) || used_decisions.contains_key(&att.decision_hash) {
         env::panic_str(&PolicyViolation::new("decision_replayed").to_string());
     }
     // The enclave recorded the intent it decided on. If the agent asks for a
@@ -749,6 +896,7 @@ fn check_attestation(
                 .to_string(),
         );
     }
+    used_decisions.insert(scoped, true);
     used_decisions.insert(att.decision_hash.clone(), true);
 }
 
