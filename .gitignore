@@ -33,3 +33,6 @@ mandate/contracts/mandate/out/
 # OS
 Thumbs.db
 .DS_Store
+
+# Local architect review — not part of either submission
+Grok_review.md

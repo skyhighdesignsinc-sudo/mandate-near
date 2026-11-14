@@ -25,13 +25,23 @@ file is machine-checked: `node tools/check-evidence.mjs JUDGE.md` exits non-zero
 stops resolving, which is how the previous set — well-formed ids that opened to nothing — was
 caught.
 
-## One claim is currently withdrawn, and why
+## What is claimed after the 2026-11-14 reviews
 
-The contest window is implemented and unit-tested, but `tools/contest-demo.mjs` now fails its own
-assertion (`C26 FAILED: the observed states do not match the claim`), so **C26 is not claimed in
-this submission**. The caller check introduced in C27 is covered by the contract's unit test
-(`only_the_named_agent_can_request_a_spend`) and by no live link in this file yet. Both are listed
-here rather than quietly deleted, because a judge who greps the repository will find them.
+The contest window was withdrawn on 2026-11-13 because its demo failed. Re-reading it also found
+that it rewound the daily counter, which would have refilled a ceiling the product says it holds.
+Both were fixed, the contract was rebuilt and redeployed code-only (`7C2sALjW…`), and
+`make contest-demo` now passes on testnet: `m107`, spend `2k6FiZG3…`, settle `Ld2v7yss…`, contest
+`7ufoNHGR…` (balance back to `1e18`, `spent_day` still `5`), second contest `EweWtJu6…` refused
+`already_contested`. **C26 is claimed again**, with that run as its evidence.
+
+The same review found a live key-deletion bug: `create_mandate` is permissionless, so any account
+could become a mandate owner and ask `revoke_key` to delete a key from the contract's own account.
+Deletion is now gated on the contract owner, and `make probe-revoke` runs the attack with a fresh
+account and shows it refused (`8HHWMDhX…`, `violation: key_delete_requires_contract_owner`).
+
+C27 (the caller check) is still covered by a unit test and no live link: the earlier live claim
+was withdrawn because its transaction id does not resolve. `docs/AUDIT-2026-11-14.md` §Round 2
+lists every finding that is fixed and every one that is not.
 
 ## Open the console before you read anything
 
@@ -60,8 +70,8 @@ in `docs/UNIQUENESS-AUDIT.md` §4.4 and the full 1,098-entry census in §4.7.
 | Spending caps, allowlist, per-day ceiling | 11 of 11 | yes |
 | Typed refusal code left in the failed receipt | common | yes, and the matrix exercises all 16 |
 | `settle` records a foreign tx reference | common | yes |
-| **Key deleted on revoke, not just paused** | **0 of 11** | implemented (C25) |
-| **Contest window on a settled payment** | **0 names in 1,098** | implemented, withdrawn from this submission (C26) |
+| **Key deleted on revoke, not just paused** | **0 of 11** | yes, gate operator-only after the review (C25) |
+| **Contest window on a settled payment** | **0 names in 1,098** | yes, live `7ufoNHGR…` (C26) |
 | Caller bound to the named agent | not claimed as unique | implemented, unit-tested (C27) |
 | Pre-flight dry run before signing | 1 of 11 (`agentshield`) | no |
 | Key expiry / lease | 1 of 11 (`leash-near`) | no |

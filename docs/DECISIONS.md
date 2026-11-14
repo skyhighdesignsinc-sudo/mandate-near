@@ -343,3 +343,55 @@ deletion, and `baseline`'s matrix) do not depend on this one.
 **Revisit trigger.** A Linux build environment: remove the line, add
 `a_contest_does_not_free_the_daily_ceiling`, redeploy, migrate, re-run `make contest-demo`,
 and C26 returns to §1 with the new hashes.
+
+## D-027 — 2026-11-14: the review fixes are on chain, not only in the source
+
+**Question.** The 2026-11-14 external reviews (Kimi M-01/M-04/M-07, Grok "Critical" and
+"High") named three defects that a reader can reach with a public RPC. Rebuilding needed a
+Linux toolchain this machine did not have. Is documenting them enough?
+
+**Answer: no — and the blocker turned out not to exist.** `cargo build --release --target
+wasm32-unknown-unknown` works natively here; only the *unit-test* harness fails (`dlltool.exe`
+is absent, D-008). So the contract could be rebuilt and redeployed. Doing that is the
+difference between a repository that lists its defects and one that has fixed them.
+
+**What changed in `mandate/contracts/mandate/src/lib.rs`.**
+
+1. **M-01, key deletion (Critical).** `create_mandate` is permissionless, and `revoke_key`
+   issued `DeleteKey` on the contract's own account after checking only the *mandate's*
+   owner. Anyone could create a mandate and delete the demo account's keys. Deletion is now
+   gated on the contract owner; a mandate owner who is not the contract owner still gets the
+   suspension and a logged `violation: key_delete_requires_contract_owner`.
+2. **M-04, approval (High).** `approve` debited without re-checking `per_day`,
+   `per_counterparty_day` or expiry, and without rolling the day. It now calls `roll_day` and
+   re-checks all three before the debit.
+3. **M-07 / D-026, contest (High).** `contest` subtracted the refund from `spent_day`, so a
+   contest refilled the daily ceiling. The subtraction is gone: the money returns, the day's
+   allowance does not.
+
+**What is on chain.** wasm `616513` bytes, sha256
+`d913321e52356918f041956231a22bd1617f348bc8747aea53856b149f753c19`, deployed as
+`7C2sALjW1t2YvTtWS64wLHMSVTaQntqXrT9zAtE4Sgmo` (code-only: `tools/deploy-code.mjs`; no
+`new`, no migration, so 106 existing mandates and every balance were untouched).
+
+**How each fix was checked on chain, not asserted.**
+
+| Fix | Live check | What it printed |
+|---|---|---|
+| M-01 | `make probe-revoke` — a freshly created faucet account became a mandate owner and called `revoke_key` with a key on the contract account (`8HHWMDhX…`) | log `violation: key_delete_requires_contract_owner`, `suspended: true`, key count 1 → 1 |
+| M-07 | `make contest-demo` — `m107`, `7ufoNHGR…` | balance back to `1e18`, `spent_total 0`, **`spent_day` 5** |
+| C25 | `make key-demo` — `GUfDeUbZ…` add, `ArC71Vwh…` revoke, `8N6sVJXL…` resume | key present → absent → still absent, mandate resumed |
+
+**The unit tests for all three were added but could not be executed here** (`cargo test`
+stops at `dlltool.exe: program not found`). They compile-check only as far as the host
+toolchain allows; a Linux run is the outstanding verification and is recorded as open rather
+than claimed. The three live probes above are the substitute, and they are stronger evidence
+than a unit test for this specific class of bug because they run against the deployed wasm.
+
+**Cost, stated.** The deployed build is no longer byte-identical to the one every earlier
+hash was produced under. Old transactions stay valid (they are history), but C25 and C26 now
+cite 2026-11-14 runs, and the previous C25 hash (`7snHs43D…`) is withdrawn because it does not
+resolve on either RPC.
+
+**Revisit trigger.** A machine with `dlltool` or Docker: run `cargo test`, paste the count
+into `docs/CLAIMS.md` C12, and delete this line if it disagrees.

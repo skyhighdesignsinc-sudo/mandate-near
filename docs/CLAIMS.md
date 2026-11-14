@@ -28,20 +28,31 @@
 | C21 | "The API and MCP payloads carry the provenance of the data they serve (`replay of a contract run, never deployed` for the snapshot)." | `mode` field in every API and MCP payload; e2e asserts `#ctx-mode` contains `replay` | D-017 |
 | C22 | "A spend whose attestation names a different amount is refused by the deployed contract, and the failed transaction is public." | `mandate/console/data/chain.json` → `txs[].code = attestation_mismatch` with an explorer link; `make chain-demo` | `line 563` of `src/lib.rs`, reproduced on testnet |
 | C23 | "The balance after a real spend is a contract view read back from testnet, not a number the UI computed." | `chain.json` → `views.mandates[].balance` after the settled spend; `#/verify` renders it | `get_mandate`/`list_mandates` on testnet |
-| C25 | "Revoking a mandate deletes the agent's key from the contract account in the same receipt, so the protocol stops accepting that signature — not only the contract refusing to pay." | `revoke_key` in `mandate/contracts/mandate/src/lib.rs`; unit test `revoke_key_suspends_and_deletes_the_key_in_one_receipt` asserts a `DeleteKey` action in the created receipt; code-only redeploy `Es4FLaVn…`; live 2026-11-13: add `BdK7UmaK…` → key present, `revoke_key` `7snHs43D…` → key absent and mandate suspended, `resume` `HjEzoVLJ…` → policy restored, key still absent (`make key-demo`) | D-022 |
+| C25 | "Revoking a mandate suspends it, and — when the caller is the contract owner — deletes the named key from the contract account in the same receipt, so the protocol stops accepting that signature; a caller who is only the mandate's owner gets the suspension and a logged refusal of the deletion." | `revoke_key` in `mandate/contracts/mandate/src/lib.rs`; unit tests `revoke_key_suspends_and_deletes_the_key_in_one_receipt` and `a_mandate_owner_who_is_not_the_contract_owner_cannot_delete_account_keys`; live 2026-11-14 on the fixed build (`d913321e…`): add `GUfDeUbZ…` → key present, `revoke_key` `ArC71Vwh…` → key absent and mandate suspended, `resume` `8N6sVJXL…` → policy restored, key still absent (`make key-demo`); the refusal branch is live-tested by `make probe-revoke` → `8HHWMDhX…`, log `violation: key_delete_requires_contract_owner`, key count unchanged | D-022, D-027 |
 | C27 | "Only the account named as the mandate's agent can request a spend; any other caller is refused with `unauthorized` and the balance does not move." | `spend` caller check in `mandate/contracts/mandate/src/lib.rs`; test `only_the_named_agent_can_request_a_spend` (asserts the refusal code and an unchanged balance). **No live transaction is cited**: the one recorded on 2026-11-13 was a locally computed id and does not resolve (`docs/AUDIT-2026-11-14.md` F-4). | D-025 |
+| C26 | "A recorded settlement can be contested on chain inside a 100-block window with one of four reason codes and an evidence hash; the amount returns to the mandate's balance while the day's allowance stays spent; the same settlement cannot be contested twice." | `contest` in `mandate/contracts/mandate/src/lib.rs`; unit tests `contest_refunds_the_balance_and_records_the_reason`, `contest_after_the_window_is_refused`, `the_last_block_inside_the_window_still_contests`, `a_settlement_can_be_contested_once`, `a_contest_does_not_free_the_daily_ceiling`; live 2026-11-14 on build `d913321e…`: `H7oxeKpM…` (create) → `2k6FiZG3…` (spend) → `Ld2v7yss…` (settle) → `7ufoNHGR…` (contest, balance back to `1e18`, `spent_day` still `5`) → `EweWtJu6…` (second contest refused `already_contested`) | D-024, D-026, D-027 |
 | C24 | "The contract compares a hash; it does not verify the attestation's signature, so the worker is a trusted component in this build." | `mandate/contracts/mandate/src/policy.rs` header; `src/state.rs` line 74; `docs/ARCHITECTURE.md` trust model | code comment, not a claim of verification |
 
-### 1.1a Withdrawn 2026-11-13 — the artefact exists but does not yet show what the sentence says
+### 1.1a Withdrawn on 2026-11-13, restored on 2026-11-14 — C26
 
-| # | Sentence | Why it is withdrawn | Returns when |
-|---|---|---|---|
-| C26 | "A recorded settlement can be contested on chain within 100 blocks with one of four reason codes, and the amount returns to the mandate's balance; the same settlement cannot be contested twice." | `contest` is deployed and the four contract tests pass, but `node tools/contest-demo.mjs` fails its own assertion, so there is no end-to-end run on testnet; and re-reading `contest` against this README found that it rewinds `spent_day`, which the README said it did not (`docs/AUDIT-2026-11-14.md` F-5, D-026). | a deploy built with the rewind removed passes `make contest-demo` and the resulting transactions resolve |
+The contest window was withdrawn when `tools/contest-demo.mjs` failed its own assertion, and
+re-reading it found a second reason: `contest` subtracted the refunded amount from
+`spent_day`, so a contest handed the day's allowance back (`docs/AUDIT-2026-11-14.md` F-5).
 
-What **is** claimed about the mechanism, and no more: the contract has a `contest` method
-that the owner can call on a recorded settlement, with a four-code reason and an evidence
-hash, and `list_contests` is a view over the log. That is a description of shipped code, not
-a claim that the window behaves correctly end to end.
+Both were fixed on 2026-11-14, and the claim returned only after the end-to-end run passed.
+The evidence is the run, not the sentence:
+
+| Step | Transaction |
+|---|---|
+| `create_mandate` (`m107`) | `H7oxeKpMyTLaF3sK86jWvbFMVeCWs16defwFVcGDPGz7` |
+| `spend` 5 | `2k6FiZG3do9qdZCLcEzC4CbpmUJnqmgQyGsRa4RQbbPa` |
+| `settle` | `Ld2v7yssJDuCLV9DGsEwZYFL61XBLg8uyEmXXMgLLAq` |
+| `contest` → balance back to `1e18`, `spent_total 0`, **`spent_day` still 5** | `7ufoNHGRKABuCxRjjgGvD3cYBaqYQKv5EMk8wmgVQNCs` |
+| second `contest` → refused `already_contested` | `EweWtJu6Ex3n62oAUAbJRXqPEfJYNUDT5yaKijdeSuh7` |
+
+The `spent_day` figure is read from `get_mandate("m107")` after the contest: the money came
+back, the day's allowance did not. That is the difference between the old build and this one,
+and it is a contract view a reader can fetch, not a log line.
 
 ### 1.1 Retired 2026-11-07 — no artefact in this repository could prove them
 
