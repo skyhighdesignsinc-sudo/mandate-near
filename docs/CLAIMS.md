@@ -29,9 +29,19 @@
 | C22 | "A spend whose attestation names a different amount is refused by the deployed contract, and the failed transaction is public." | `mandate/console/data/chain.json` → `txs[].code = attestation_mismatch` with an explorer link; `make chain-demo` | `line 563` of `src/lib.rs`, reproduced on testnet |
 | C23 | "The balance after a real spend is a contract view read back from testnet, not a number the UI computed." | `chain.json` → `views.mandates[].balance` after the settled spend; `#/verify` renders it | `get_mandate`/`list_mandates` on testnet |
 | C25 | "Revoking a mandate deletes the agent's key from the contract account in the same receipt, so the protocol stops accepting that signature — not only the contract refusing to pay." | `revoke_key` in `mandate/contracts/mandate/src/lib.rs`; unit test `revoke_key_suspends_and_deletes_the_key_in_one_receipt` asserts a `DeleteKey` action in the created receipt; code-only redeploy `Es4FLaVn…`; live 2026-11-13: add `BdK7UmaK…` → key present, `revoke_key` `7snHs43D…` → key absent and mandate suspended, `resume` `HjEzoVLJ…` → policy restored, key still absent (`make key-demo`) | D-022 |
-| C27 | "Only the account named as the mandate's agent can request a spend; any other caller is refused with `unauthorized` and the balance does not move." | `spend` caller check in `mandate/contracts/mandate/src/lib.rs`; test `only_the_named_agent_can_request_a_spend`; live 2026-11-13: mandate `m58` with agent `someone-else-agent.testnet`, spend sent by the owner `3aqb32W9…` → `unauthorized`, balance `1e18` unchanged; deploy `6HEAin7E…` | D-025 |
-| C26 | "A recorded settlement can be contested on chain within 100 blocks with one of four reason codes, and the amount returns to the mandate's balance; the same settlement cannot be contested twice." | `contest` in `mandate/contracts/mandate/src/lib.rs`; tests `contest_refunds_the_balance_and_records_the_reason`, `contest_after_the_window_is_refused`, `the_last_block_inside_the_window_still_contests`, `a_settlement_can_be_contested_once`; live 2026-11-13: spend `2QVZbqqg…`, settle `Cod27sLb…`, contest `4vGSHH9o…` → balance back to `1e18` and `spent_total 0`, second contest `56HHwzRN…` refused `already_contested` (`make contest-demo`) | D-024 |
+| C27 | "Only the account named as the mandate's agent can request a spend; any other caller is refused with `unauthorized` and the balance does not move." | `spend` caller check in `mandate/contracts/mandate/src/lib.rs`; test `only_the_named_agent_can_request_a_spend` (asserts the refusal code and an unchanged balance). **No live transaction is cited**: the one recorded on 2026-11-13 was a locally computed id and does not resolve (`docs/AUDIT-2026-11-14.md` F-4). | D-025 |
 | C24 | "The contract compares a hash; it does not verify the attestation's signature, so the worker is a trusted component in this build." | `mandate/contracts/mandate/src/policy.rs` header; `src/state.rs` line 74; `docs/ARCHITECTURE.md` trust model | code comment, not a claim of verification |
+
+### 1.1a Withdrawn 2026-11-13 — the artefact exists but does not yet show what the sentence says
+
+| # | Sentence | Why it is withdrawn | Returns when |
+|---|---|---|---|
+| C26 | "A recorded settlement can be contested on chain within 100 blocks with one of four reason codes, and the amount returns to the mandate's balance; the same settlement cannot be contested twice." | `contest` is deployed and the four contract tests pass, but `node tools/contest-demo.mjs` fails its own assertion, so there is no end-to-end run on testnet; and re-reading `contest` against this README found that it rewinds `spent_day`, which the README said it did not (`docs/AUDIT-2026-11-14.md` F-5, D-026). | a deploy built with the rewind removed passes `make contest-demo` and the resulting transactions resolve |
+
+What **is** claimed about the mechanism, and no more: the contract has a `contest` method
+that the owner can call on a recorded settlement, with a four-code reason and an evidence
+hash, and `list_contests` is a view over the log. That is a description of shipped code, not
+a claim that the window behaves correctly end to end.
 
 ### 1.1 Retired 2026-11-07 — no artefact in this repository could prove them
 

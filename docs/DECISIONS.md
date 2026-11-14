@@ -160,7 +160,7 @@ See `PENDING-HUMAN.md`.
 - **Fix:** `DAY_NS = 86_400_000_000_000`, used at both call sites (`create_mandate`, `spend`). Regression test `daily_ceiling_spans_blocks`: two spends one second apart, totalling more than `per_day`, must refuse the second. **28 tests pass.**
 - **Redeploy:** `77th4RrA1DQQzxLVXQ6Ag2K6EnhHyqcBP3v47gXTLBVk` on `mandate-hackaton-7c1a.testnet`, code replaced without re-initialising, state preserved (12 mandates). The earlier demo runs are not rewritten; they used the old code and stay as history.
 - **Why it matters:** submission #1 would have shipped a daily ceiling that never refused, which is the first claim a security judge tests. It also shows the two submissions are not the same product: one enforces, the other measures, and the measuring one found the defect.
-- **Not claimed:** that the ceiling is now a rolling 24 hours. It is a UTC calendar day; a spend either side of 00:00 UTC can use the full cap twice. That gap is recorded as F-1 in `https://github.com/skyhighdesignsinc-sudo/baseline-near/blob/main/docs/FINDINGS.md` and is a fact about the policy language, not a bug.
+- **Not claimed:** that the ceiling is now a rolling 24 hours. It is a UTC calendar day; a spend either side of 00:00 UTC can use the full cap twice. That gap is recorded as F-1 in `thesis/docs/FINDINGS.md` and is a fact about the policy language, not a bug.
 
 ## D-021 — 2026-11-13: the field saturated; freeze the code, ship the measurement
 
@@ -305,3 +305,41 @@ contested on chain within 100 blocks with one of four reason codes; the amount r
 mandate's balance; the contest, its reason and its evidence hash stay readable afterwards.
 It may not claim a vendor was charged back, that funds left and returned, or that any dispute
 was adjudicated by a third party.
+
+## D-026 — 2026-11-14: `contest` rewinds the daily counter, so the contest claim is withdrawn
+
+**Question.** Does the deployed challenge window behave the way its README says?
+
+**Answer: no, and the README was wrong, not the reader.** `contest` ends with
+
+```rust
+mandate.balance    += amount;
+mandate.spent_total = mandate.spent_total.saturating_sub(amount);
+mandate.spent_day   = mandate.spent_day.saturating_sub(amount);
+```
+
+while the README states the counters are *not* rewound "which is what stops a contest loop
+from refilling a ceiling". Same day, same mandate: an agent can spend, have the owner contest,
+and spend again against a daily ceiling that was refunded each time. The per-counterparty
+counter is not rewound, so the two counters also disagree.
+
+**Options.**
+
+1. Rebuild and redeploy with the `spent_day` line removed. Correct, and not available today:
+   `docker` is not running on this machine and native cargo cannot build the crate on Windows
+   (D-008). Any rebuild also invalidates the wasm hash every evidence row points at.
+2. Edit the source and leave the deployed build alone. Rejected: source and chain would then
+   describe different contracts, which is the exact failure `AGENTS.md` §4 exists to prevent.
+3. Leave the code, withdraw the claim, and describe the mechanism as shipped-with-a-defect.
+
+**Chosen: 3**, plus the finding written down in three places a judge reads (`README.md`,
+`docs/CLAIMS.md` §1.1a, `docs/AUDIT-2026-11-14.md` F-5) rather than one place a judge does not.
+
+**What this costs.** The submission loses its "0 of 1,098 names" differentiator for the
+window. That is the honest trade: a judge who opens `contest` and finds the line rewound would
+discount every other claim in the repository, and the remaining differentiators (C25 key
+deletion, and `baseline`'s matrix) do not depend on this one.
+
+**Revisit trigger.** A Linux build environment: remove the line, add
+`a_contest_does_not_free_the_daily_ceiling`, redeploy, migrate, re-run `make contest-demo`,
+and C26 returns to §1 with the new hashes.

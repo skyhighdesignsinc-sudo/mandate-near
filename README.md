@@ -1,8 +1,9 @@
 # Mandate — authority that is enforced, recorded, and reversible
 
 An agent gets a budget and an allowlist that the key itself cannot exceed, an attested reason
-for every spend, a one-call kill switch that also deletes the agent's key, and — since D-024 —
-a window in which a settled payment can be contested on chain.
+for every spend, and a one-call kill switch that also deletes the agent's key. Since D-024 the
+contract also has a challenge window on recorded settlements — shipped, deployed, and
+**withdrawn as a claim** until its own demo passes (see *the challenge window, precisely*).
 
 Tracks: `security`, `agents`, `business`. Testnet only. Submission #1 of two; the sibling
 submission is [`baseline`](https://github.com/skyhighdesignsinc-sudo/baseline-near#readme), which measures whether policies like this one
@@ -38,9 +39,12 @@ refusal happens before the money moves and leaves a reason code behind.
   a separate on-chain call, never a paused transaction.
 - **`revoke_key` suspends the mandate and deletes the agent's key in the same receipt**, so the
   protocol stops accepting that signature rather than the contract merely refusing to pay.
-- **`contest`, the challenge window (D-024).** A settlement records its amount and block; for
-  100 blocks the owner can contest it with one of four reason codes and an evidence hash. The
-  amount returns to the mandate's balance and the contest stays readable.
+- **`contest`, the challenge window (D-024), shipped but not claimed.** A settlement records
+  its amount and block; the owner can call `contest` with one of four reason codes and an
+  evidence hash inside a 100-block window, and the logged entry stays readable via
+  `list_contests`. It is described here because it is in the deployed code, and it is **not**
+  claimed as working end to end: `tools/contest-demo.mjs` fails its own assertion and the
+  method rewinds the daily counter against the design below (D-026).
 
 ## The challenge window, precisely
 
@@ -50,9 +54,18 @@ refusal happens before the money moves and leaves a reason code behind.
 - window: 100 blocks from the settling block, inclusive at both ends (a settlement at block 100
   can be contested at 200, not at 201);
 - reasons, frozen: `not_delivered`, `wrong_amount`, `duplicate`, `key_compromised`;
-- the daily and per-counterparty counters are **not** rewound — a contested payment still
-  consumed that day's allowance, which is what stops a contest loop from refilling a ceiling;
-- one contest per settlement; a second is refused with `already_contested`.
+- one contest per settlement; a second is refused with `already_contested`;
+- migrated settlements cannot be contested, because their amount was never stored.
+
+**The defect, stated where a judge will read it.** The design above says the counters are not
+rewound, so a contest cannot refill a ceiling. The deployed code does not do that:
+`contest` subtracts the amount from `spent_day` (it does not touch the per-counterparty
+counter). Within one day, `spend → contest → spend → contest` therefore frees daily allowance,
+which is exactly the loop the sentence was written to exclude. It is not patched here because
+rebuilding the wasm needs a Linux toolchain this machine does not have running, and editing
+the source without redeploying would leave the source describing a contract that is not the
+one on chain (`docs/AUDIT-2026-11-14.md` F-5, D-026). The four `contest` unit tests pass; the
+end-to-end demo does not.
 
 What it is not: a chargeback. No value leaves the contract at settlement and nothing is
 recovered from a vendor.
@@ -67,7 +80,6 @@ make verify         # hash self-test; prints inputsHash
 make doctor         # which features are ACTIVE vs FALLBACK
 make chain-demo     # real testnet spends, written to console/data/chain.json
 make key-demo       # add a key, revoke it, resume: C25
-make contest-demo   # spend, settle, contest, second contest refused: C26
 make uat            # Playwright: 19 behavioural + 5 UAT journeys
 ```
 

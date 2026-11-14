@@ -9,17 +9,26 @@
 >
 > | step | transaction |
 > |---|---|
-> | deploy (current code) | `8QJAq7zZJc4PtZ4XYuAbgpPx8kqDsjnpSABdXW7YYHRi` |
-> | `create_mandate` (mandate `m4`) | `7Km9VYd7ttZmk4vijgBxo9p1mzs5qLVAU8bSYPAnxjsv` |
-> | `spend` authorised (12.00 USDC) | `9zrGsEUcTfTZ2uP11TTdAaqVC7xuY3dnxuifxpAsYCMc` |
-> | `spend` refused, `attestation_mismatch` | `7LhShLj47ACJUksnSK3cMNMcgddQt4AgvNno3u1oF4cf` |
-> | `settle` | `E48ugUE83LvzsWAaTsMyrghnoxHSBCMrZaf2GCtaUA4N` |
+> | `create_mandate` (mandate `m101`) | `44aiBQyEVdemEkNQAe4bmfP33pqmELbH9Awzwp7Bg2h9` |
+> | `spend` authorised (12.00 USDC) | `8kBeNySH1fRpwHTWPQ15oGubgdDdQcu5RVunu1V13cbU` |
+> | `spend` refused, `attestation_mismatch` | `Vumoz6Dnb2ea6jpLwiSVXvvR6jAcbLuRyW3BwFyzwLd` |
+> | `settle` | `Gq1xnDJQgqoyyXqXXN7orpUDgH488hTFeSnyWceZdBh8` |
 >
 > Open any of them at `https://testnet.nearblocks.io/txns/<hash>`. The refused
 > one is a *failed* transaction on purpose: the attestation named a different
 > amount, and the receipt carries the contract's `violation: attestation_mismatch`
-> log line (D-018). The last view read back from the chain shows mandate `m4` with
-> balance `88000000` and `settled_count 1` after the spend and the settlement.
+> log line (D-018). The state read back after the run shows mandate `m101` with
+> balance `88000000` (88.00 USDC) and `spent_total 12000000`.
+>
+> **On the deploy transaction.** It is not cited here. The ids recorded for the
+> earlier deploys were computed locally rather than read from the node, and do not
+> resolve; a dead hash in this table is worse than an absent one. The build that
+> is live is identified by what the account returns: a mandate created today
+> carries `policy_hash a67e5f78…`, and the contract exposes `contest` and
+> `list_contests`, which are absent from every earlier build.
+>
+> These four were re-checked with `node tools/check-evidence.mjs mandate/docs/SCREENER.md`
+> on 2026-11-14: 4/4 resolve.
 >
 > **What is still a replay:** the numbers on Desk, Mandate and the timeline come
 > from `make demo` against the fixture contract id `mandate.testnet`, not from the
