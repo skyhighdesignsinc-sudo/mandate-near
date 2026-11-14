@@ -92,6 +92,7 @@ fn decision(n: u64) -> String {
 
 fn att(amount: u128, vendor: &str, n: u64, policy_hash: &str) -> Attestation {
     Attestation {
+        signature: None,
         decision_hash: decision(n),
         code_hash: CODE_HASH.to_string(),
         quote_hash: QUOTE_HASH.to_string(),

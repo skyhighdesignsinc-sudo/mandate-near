@@ -91,6 +91,20 @@ pub fn upgrade_mandate(old: OldMandate, at_block: u64) -> crate::state::Mandate 
     }
 }
 
+/// The shape of `Contract` immediately before D-029, when `attestor_key` was
+/// added. It is spelled out rather than referenced so a later change to the live
+/// struct cannot silently change what this migration reads.
+#[near(serializers = [borsh])]
+#[derive(Clone, Debug, PartialEq)]
+pub struct ContractV3 {
+    pub owner: AccountId,
+    pub attestor: AccountId,
+    pub mandates: BTreeMap<String, crate::state::Mandate>,
+    pub pending: BTreeMap<String, PendingRequest>,
+    pub used_decisions: BTreeMap<String, bool>,
+    pub next_id: u64,
+}
+
 /// Kept out of `lib.rs` so that file stays about behaviour.
 pub fn upgrade(old: OldContract, at_block: u64) -> crate::Contract {
     let mandates = old
@@ -106,5 +120,6 @@ pub fn upgrade(old: OldContract, at_block: u64) -> crate::Contract {
         pending: old.pending,
         used_decisions: old.used_decisions,
         next_id: old.next_id,
+        attestor_key: None,
     }
 }

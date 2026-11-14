@@ -72,9 +72,10 @@ in `docs/UNIQUENESS-AUDIT.md` §4.4 and the full 1,098-entry census in §4.7.
 | `settle` records a foreign tx reference | common | yes |
 | **Key deleted on revoke, not just paused** | **0 of 11** | yes, gate operator-only after the review (C25) |
 | **Contest window on a settled payment** | **0 names in 1,098** | yes, live `7ufoNHGR…` (C26) |
-| **The same intent cannot be debited twice** | not measured in that audit | yes, live `7CcArdAP…` refused `intent_consumed` (C28) |
-| **One foreign tx reference settles one authorisation** | not measured in that audit | yes, live `74hPPwd1…` refused `tx_replayed` (C29) |
-| **Owner can close a mandate and withdraw the unreserved balance** | not measured in that audit | yes, live `X128ZuNo…`, `FNT9vHo8…` (C30) |
+| **The same intent cannot be debited twice** | not measured in that audit | yes, live `2yYHSZsh…` refused `intent_consumed` (C28) |
+| **One foreign tx reference settles one authorisation** | not measured in that audit | yes, live `H8urfrWk…` refused `tx_replayed` (C29) |
+| **Owner can close a mandate and withdraw the unreserved balance** | not measured in that audit | yes, live `BHUcq26y…`, `8qnz7eza…` (C30) |
+| **Attestation is signed, not just hashed, once a key is registered** | not measured in that audit | yes, live `8pkz6Jj7…` accepted; `HaWYjNrw…`, `H6n6BbiF…` refused (C31) |
 | Caller bound to the named agent | not claimed as unique | implemented, unit-tested (C27) |
 | Pre-flight dry run before signing | 1 of 11 (`agentshield`) | no |
 | Key expiry / lease | 1 of 11 (`leash-near`) | no |

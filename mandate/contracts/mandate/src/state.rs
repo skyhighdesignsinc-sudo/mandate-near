@@ -133,6 +133,14 @@ pub struct Attestation {
     /// (chain, amount, vendor, asset); a mismatch means the agent changed the
     /// request after the decision was attested.
     pub intent_hash: String,
+    /// Ed25519 signature by the key registered with `set_attestor_key`, over
+    /// `"<mandate>|<intent>|<decision>|<policy>|<code>|<quote>"`. Hex, 128 chars.
+    /// `None` for every record produced before D-029 and for policies that do not
+    /// require attestation; the contract refuses an unsigned record whenever a key
+    /// is configured, so this field is the difference between "the caller says"
+    /// and "the attestor signed" (M-03).
+    #[serde(default)]
+    pub signature: Option<String>,
 }
 
 pub const STATUS_AUTHORISED: &str = "authorised";

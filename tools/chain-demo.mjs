@@ -102,7 +102,14 @@ async function main() {
   if (created.failure) throw new Fail(created.failure.code, `create_mandate failed: ${created.failure.detail}`);
   txs.push({ label: 'create_mandate', hash: created.txHash, explorer: created.explorer, outcome: 'success' });
   const known = new Set(before.map((m) => m.id));
-  const mandate = (await viewCall(account, 'list_mandates')).find((m) => !known.has(m.id));
+  // A view call can land on a node that has not applied the block we just wrote.
+  // Reading once and failing made the demo look broken when the chain was merely
+  // one block behind, so this polls instead of trusting a single read.
+  let mandate = null;
+  for (let attempt = 0; attempt < 20 && !mandate; attempt += 1) {
+    mandate = (await viewCall(account, 'list_mandates')).find((m) => !known.has(m.id)) ?? null;
+    if (!mandate) await new Promise((r) => setTimeout(r, 1000));
+  }
   if (!mandate) throw new Fail('mandate_missing', 'create_mandate succeeded but no new mandate appeared');
   say(`  mandate ${mandate.id} created with balance ${mandate.balance} ${mandate.asset}\n`);
 
@@ -169,7 +176,10 @@ async function main() {
   });
 
   // 4. Settle, so stage four of the proof rail is a fact rather than a promise.
-  const txRef = `base_sepolia:0x${sha256Hex(`mandate-chain-demo:${intent}`).slice(0, 64)}`;
+  // The reference identifies a foreign payment, not a script run. Hashing only the
+  // intent made every replay of this scenario claim the same tx, which the contract
+  // now refuses (`tx_replayed`, C29) — correctly. The mandate id makes it unique.
+  const txRef = `base_sepolia:0x${sha256Hex(`mandate-chain-demo:${mandate.id}:${intent}`).slice(0, 64)}`;
   const settled = await submit({
     signerId: account,
     keyPair,

@@ -129,12 +129,11 @@ const accessKey = {
   },
 };
 
-const rpcBody = {
-  jsonrpc: '2.0',
-  id: 'mandate-add-key',
-  method: 'add_key',
-  params: {
-    account_id: args.account,
+// Review Grok (Low): NEAR's JSON-RPC has no `add_key` method. Adding a key is an
+// `AddKey` action inside a signed transaction, so that is what is printed. The old
+// output looked like a call you could POST, which it never was.
+const addKeyAction = {
+  AddKey: {
     public_key: publicKeyStr,
     access_key: accessKey,
   },
@@ -160,9 +159,9 @@ console.log('     --method-names spend \\');
 console.log(`     --public-key '${publicKeyStr}' \\`);
 console.log('     network-config testnet sign-with-legacy-keychain send');
 console.log('');
-console.log('2) or grant it over RPC (POST to https://test.rpc.near.org):');
+console.log('2) or as an AddKey action in a transaction you sign and send:');
 console.log('');
-console.log(JSON.stringify(rpcBody, null, 2));
+console.log(JSON.stringify({ receiver_id: args.account, actions: [addKeyAction] }, null, 2));
 console.log('');
 console.log('The budget itself is a funded balance on the contract, not this allowance.');
 console.log('Rotate by re-running this script and deleting the old key on-chain.');

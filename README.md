@@ -99,8 +99,10 @@ committed replay.
   `FNT9vHo8…`). That path moves the account's NEAR, not an asset the label names: the 88.00
   USDC on the desk is a six-decimal label, not a balance an exchange would honour, so **do
   not deposit funds you expect to recover at a market price**.
-- **The attestor is a trusted component in this build.** The contract compares a hash; it does
-  not verify Intel's signature. C24 says so.
+- **The attestor is a trusted component in this build.** The contract compares a hash and, once the
+  owner calls `set_attestor_key`, verifies an Ed25519 signature over the tuple (C31). It does not
+  verify Intel's signature; C24 says so. The deployed demo account leaves the key unset, so its
+  spends run in the hash-compare mode and log `attestation_unsigned`.
 - **The dispute log has no console surface yet.** `list_contests` is a contract view and the
   demo prints it; the UI does not render it. Saying this is cheaper than showing a screenshot
   of something that does not exist.

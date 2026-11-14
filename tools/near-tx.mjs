@@ -156,12 +156,29 @@ async function nextNonce(accountId, publicKey) {
     nonceCache.set(cacheKey, next);
     return next;
   }
-  const key = await rpc('query', {
-    request_type: 'view_access_key',
-    finality: 'final',
-    account_id: accountId,
-    public_key: publicKey.toString(),
-  }, 25_000);
+  // A key created in the same block is sometimes not visible at `final` yet, and
+  // the node then answers with a result that has no nonce. Retry briefly before
+  // failing: the alternative was `BigInt(undefined)`, which is a stack trace, not
+  // a diagnosis.
+  let key;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    try {
+      key = await rpc('query', {
+        request_type: 'view_access_key',
+        finality: 'final',
+        account_id: accountId,
+        public_key: publicKey.toString(),
+      }, 25_000);
+    } catch (err) {
+      key = null;
+      if (attempt === 7) throw err;
+    }
+    if (key && key.nonce !== undefined) break;
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  if (!key || key.nonce === undefined) {
+    throw new Error(`no access key ${publicKey} on ${accountId} after 4s — was it added?`);
+  }
   const next = BigInt(key.nonce) + 1n;
   nonceCache.set(cacheKey, next);
   return next;

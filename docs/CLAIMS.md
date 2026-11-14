@@ -71,6 +71,20 @@ softened (`AGENTS.md` Â§7).
 | C2 | "The seizure is a threshold signature from an 11-of-17 network, not a keeper with a private key." | there is no seizure and no MPC request in this repo | a contract-initiated signature moves funds on a testnet, tx linked in `SCREENER.md` |
 | C3 | "No bridge, no wrapped asset, no oracle committee is used in this flow." | true of a flow we no longer ship; vacuous here | Pledge/Bond is rebuilt and deployed |
 | C9 | "Built on NEAR Chain Signatures, Read MPC, NEAR Intents and NEAR AI Cloud." | the contract calls none of them; the attestation is a hash comparison | one call to each primitive exists in the deployed code path |
+| C31 | "Once the owner registers an Ed25519 attestor key, `spend` accepts an attestation only if it carries a signature by that key over the mandate, intent, decision, policy and code hashes; a signature moved to another decision and an unsigned record are both refused with `attestation_mismatch`." | `check_attestation` + `set_attestor_key` in `mandate/contracts/mandate/src/lib.rs`; live 2026-11-14 on `mig-mwgxoq09.testnet` (throwaway account, same wasm `3ff5997b…`): deploy `2o7rBts4…`, reset `CvST2u4L…`, create `5eyRPgD9…`, key `6QSEtGvA…`, signed spend `8pkz6Jj7…`, moved signature `HaWYjNrw…` refused, unsigned `H6n6BbiF…` refused (8/8). The live demo account leaves the key unset, so its spends are hash-compared only and log `attestation_unsigned`. | D-029 |
+
+### 1.3 Evidence after the D-030 reset (what the claims above now cite)
+
+The live account was reset on 2026-11-14 (`D-030`), so mandate ids from earlier runs are no longer
+in contract state; their transactions still resolve and remain listed above. These are the receipts
+on the current deployment (`wasm 3ff5997b…`, contract `mandate-hackaton-7c1a.testnet`):
+
+| Claim | Current receipts |
+|---|---|
+| C25 | `m1` — add key `2zDpzchP…`, `revoke_key` `9W78SMo9…`, `resume` `7Ld94SiK…`; `make key-demo` passes |
+| C26 | `m2` — create `3z9sJn8h…`, spend `BdH6kvvA…`, settle `8FPdzjfj…`, contest `GMxdGjtE…`, second contest `HTWhvW6v…` refused `already_contested` |
+| C28 / C29 / C30 | `m3`, `m4` — the run printed in `make intent-demo`: spend `2yYHSZsh…`, second spend `AmBYBbm9…` refused `intent_consumed`; settle `BjKFkzno…`, replay `H8urfrWk…` refused `tx_replayed`; close `BHUcq26y…`, withdraw `8qnz7eza…`, over-withdrawal `255FQ41b…` refused `balance_reserved` (9/9) |
+| C31 | `mig-mwgxoq09.testnet` — signed `8pkz6Jj7…` accepted; moved `HaWYjNrw…` and unsigned `H6n6BbiF…` refused (8/8) |
 
 ## 2. Claims we are NOT allowed to make (and what to say instead)
 

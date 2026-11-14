@@ -90,7 +90,11 @@ if (spent.failure) {
   process.exit(3);
 }
 
-const afterSpend = await viewCall(account, 'get_mandate', { id: mandate.id });
+let afterSpend = await viewCall(account, 'get_mandate', { id: mandate.id });
+for (let i = 0; i < 20 && BigInt(afterSpend.balance) === BigInt(mandate.balance); i += 1) {
+  await new Promise((r) => setTimeout(r, 500));
+  afterSpend = await viewCall(account, 'get_mandate', { id: mandate.id });
+}
 console.log(`after spend:    balance ${afterSpend.balance}  spent_total ${afterSpend.spent_total}`);
 
 const txRef = `demo:${spent.txHash.slice(0, 16)}`;
@@ -111,9 +115,17 @@ if (contested.failure) {
   process.exit(3);
 }
 
-const afterContest = await viewCall(account, 'get_mandate', { id: mandate.id });
-const settlement = await viewCall(account, 'get_settlement', { id: mandate.id, intent });
-const log = await viewCall(account, 'list_contests');
+// Views can trail the receipt by a block; contest is only visible once the state
+// the claim describes actually exists, so poll for it rather than sampling once.
+let afterContest = await viewCall(account, 'get_mandate', { id: mandate.id });
+let settlement = await viewCall(account, 'get_settlement', { id: mandate.id, intent });
+let log = await viewCall(account, 'list_contests');
+for (let i = 0; i < 20 && (!settlement?.contest || log.length === 0); i += 1) {
+  await new Promise((r) => setTimeout(r, 500));
+  afterContest = await viewCall(account, 'get_mandate', { id: mandate.id });
+  settlement = await viewCall(account, 'get_settlement', { id: mandate.id, intent });
+  log = await viewCall(account, 'list_contests');
+}
 
 // One settlement, one contest: the contract must refuse the second.
 const twice = await send(

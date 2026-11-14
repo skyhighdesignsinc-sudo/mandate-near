@@ -74,9 +74,15 @@ pub struct Contract {
     pub attestor: AccountId,
     pub mandates: BTreeMap<MandateId, Mandate>,
     pub pending: BTreeMap<String, PendingRequest>,
-    /// decision_hash -> true. A decision authorises one spend, once.
+    /// Used-set. Domain-separated keys: `"<mandate>|<decision>"` for a spent
+    /// decision, `"tx|<tx_ref>"` for a settled foreign transaction, and the bare
+    /// decision hash for records written before D-028.
     pub used_decisions: BTreeMap<String, bool>,
     pub next_id: u64,
+    /// Ed25519 key that must sign every attestation, in `ed25519:<base58>` form.
+    /// `None` until the owner calls `set_attestor_key`; while it is `None` the
+    /// contract can only compare hashes, which is what C24 says (M-03).
+    pub attestor_key: Option<String>,
 }
 
 #[near]
@@ -90,7 +96,98 @@ impl Contract {
             pending: BTreeMap::new(),
             used_decisions: BTreeMap::new(),
             next_id: 1,
+            attestor_key: None,
         }
+    }
+
+    /// Start over on the same account, keeping the owner. Owner only.
+    ///
+    /// This is the testnet path chosen over a migration (D-030): the demo state is
+    /// disposable, and a reintialiser that ignores the old shape cannot half-succeed.
+    /// It reads the pre-D-029 layout only to learn who the owner is, so the call
+    /// cannot be used by anyone else to erase the deployment.
+    ///
+    /// After this returns, `mandates`, `pending`, `used_decisions` and `next_id`
+    /// are empty/1 and `attestor_key` is `None`; `tools/chain-demo.mjs` rebuilds the
+    /// run the console renders.
+    #[init(ignore_state)]
+    #[allow(dead_code)]
+    pub fn reset(attestor: AccountId) -> Self {
+        // This reads the CURRENT shape. A pre-D-029 account cannot use it — that is
+        // what `migrate_attestor` is for — and trying both shapes in one call is worse
+        // than not: deserializing the wrong bytes aborts inside Borsh before any
+        // fallback can run, which is a trap, not an `Option::None`.
+        let now: Self = env::state_read().expect("state readable");
+        let (owner, discarded_mandates, discarded_pending) =
+            (now.owner, now.mandates.len(), now.pending.len());
+        if env::predecessor_account_id() != owner {
+            env::panic_str(&PolicyViolation::new("owner_only").to_string());
+        }
+        env::log_str(&format!(
+            "state_reset: discarded_mandates={} discarded_pending={} attestor={}",
+            discarded_mandates, discarded_pending, attestor
+        ));
+        Self {
+            owner,
+            attestor,
+            mandates: BTreeMap::new(),
+            pending: BTreeMap::new(),
+            used_decisions: BTreeMap::new(),
+            next_id: 1,
+            attestor_key: None,
+        }
+    }
+
+    /// Read pre-D-029 state (no `attestor_key`) and write it in the current shape.
+    ///
+    /// Kept for the record even though D-030 chose a reset for this deployment: a
+    /// future change with state worth keeping should migrate, not wipe.
+    #[init(ignore_state)]
+    #[allow(dead_code)]
+    pub fn migrate_attestor() -> Self {
+        let old: crate::migrate::ContractV3 = env::state_read().expect("old state readable");
+        env::log_str(&format!(
+            "migrated: mandates={} pending={} next_id={}",
+            old.mandates.len(),
+            old.pending.len(),
+            old.next_id
+        ));
+        Self {
+            owner: old.owner,
+            attestor: old.attestor,
+            mandates: old.mandates,
+            pending: old.pending,
+            used_decisions: old.used_decisions,
+            next_id: old.next_id,
+            attestor_key: None,
+        }
+    }
+
+    /// Register the Ed25519 key that attestations must be signed with (M-03).
+    /// Owner only. Passing an empty string clears it and returns the contract to
+    /// hash-comparison mode, which is logged rather than hidden.
+    pub fn set_attestor_key(&mut self, key: String) -> Option<String> {
+        if env::predecessor_account_id() != self.owner {
+            env::panic_str(&PolicyViolation::new("owner_only").to_string());
+        }
+        if key.trim().is_empty() {
+            self.attestor_key = None;
+            env::log_str("attestor_key_cleared: attestations are hash-compared only");
+            return None;
+        }
+        let parsed = match key.parse::<PublicKey>() {
+            Ok(k) => k,
+            Err(_) => env::panic_str(
+                &PolicyViolation::fail("invalid_key", "not an ed25519 public key").to_string(),
+            ),
+        };
+        self.attestor_key = Some(parsed.to_string());
+        env::log_str(&format!("attestor_key_set: {}", parsed));
+        self.attestor_key.clone()
+    }
+
+    pub fn get_attestor_key(&self) -> Option<String> {
+        self.attestor_key.clone()
     }
 
     // ---------------------------------------------------------------- owner
@@ -450,6 +547,7 @@ impl Contract {
             &mut self.used_decisions,
             &id,
             &mandate.policy,
+            self.attestor_key.as_deref(),
             &mandate.policy_hash,
             &attestation,
             &intent,
@@ -852,6 +950,7 @@ fn check_attestation(
     used_decisions: &mut BTreeMap<String, bool>,
     mandate_id: &str,
     policy: &Policy,
+    attestor_key: Option<&str>,
     mandate_policy: &str,
     att: &Attestation,
     intent: &str,
@@ -896,8 +995,82 @@ fn check_attestation(
                 .to_string(),
         );
     }
+
+    // M-03: until this existed, every field above was supplied by the caller, so a
+    // "decision" was the agent's own claim dressed in hashes. With a key registered,
+    // the attestor has to have signed the exact tuple, and the signature is checked
+    // against the registered key inside the contract (`env::ed25519_verify`).
+    //
+    // The message is built from the values the contract just checked, not from a
+    // blob the caller hands over, so a valid signature cannot be moved to a
+    // different mandate, intent or policy revision.
+    if let Some(registered) = attestor_key {
+        let message = format!(
+            "{}|{}|{}|{}|{}|{}",
+            mandate_id, intent, att.decision_hash, att.policy_hash, att.code_hash, att.quote_hash
+        );
+        let sig = att.signature.as_deref().and_then(hex64);
+        let key = match registered.parse::<PublicKey>() {
+            Ok(k) => k,
+            Err(_) => env::panic_str(
+                &PolicyViolation::fail("invalid_key", "registered attestor key is unreadable")
+                    .to_string(),
+            ),
+        };
+        // `PublicKey::as_bytes()` carries the enum encoding, not the raw key, so its
+        // length is 32 for a bare ed25519 key and 33 with the type tag. Both are
+        // accepted here; anything else is refused rather than sliced on a guess.
+        // A secp256k1 key is refused outright: this check verifies ed25519 only.
+        if !registered.starts_with("ed25519:") {
+            env::panic_str(
+                &PolicyViolation::fail("invalid_key", "attestor key must be ed25519").to_string(),
+            );
+        }
+        let raw = key.as_bytes();
+        let key_bytes: [u8; 32] = match raw.len() {
+            32 => raw.try_into().expect("32 bytes"),
+            33 => raw[1..].try_into().expect("tag + 32 bytes"),
+            n => env::panic_str(
+                &PolicyViolation::fail("invalid_key", format!("unexpected key encoding: {} bytes", n))
+                    .to_string(),
+            ),
+        };
+        match sig {
+            Some(bytes) => {
+                if !env::ed25519_verify(&bytes, message.as_bytes(), &key_bytes) {
+                    env::panic_str(
+                        &PolicyViolation::fail(
+                            "attestation_mismatch",
+                            "signature does not verify against the registered key",
+                        )
+                        .to_string(),
+                    );
+                }
+            }
+            None => env::panic_str(
+                &PolicyViolation::fail("attestation_mismatch", "a key is registered, the record is unsigned")
+                    .to_string(),
+            ),
+        }
+    } else {
+        env::log_str("attestation_unsigned: no attestor key configured, hashes compared only");
+    }
+
     used_decisions.insert(scoped, true);
     used_decisions.insert(att.decision_hash.clone(), true);
+}
+
+/// Decode exactly 64 bytes of hex. `None` for anything else, so a malformed
+/// signature is refused as a signature problem rather than crashing the call.
+fn hex64(s: &str) -> Option<[u8; 64]> {
+    if s.len() != 128 {
+        return None;
+    }
+    let mut out = [0u8; 64];
+    for (i, byte) in out.iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&s[i * 2..i * 2 + 2], 16).ok()?;
+    }
+    Some(out)
 }
 
 fn debit(mandate: &mut Mandate, chain: &str, vendor: &str, amount: u128) {

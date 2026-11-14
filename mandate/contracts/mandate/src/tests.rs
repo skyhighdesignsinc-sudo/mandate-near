@@ -69,6 +69,7 @@ fn setup(deposit: u128, require_attestation: bool) -> (Contract, String) {
 
 fn att(chain: &str, amount: u128, vendor: &str, decision: &str) -> Attestation {
     Attestation {
+        signature: None,
         decision_hash: decision.to_string(),
         code_hash: "codehash".to_string(),
         quote_hash: "quotehash".to_string(),
@@ -623,4 +624,68 @@ fn only_the_named_agent_can_request_a_spend() {
         VENDOR.to_string(),
         att(CHAIN, 5, VENDOR, "d1"),
     );
+}
+
+// -------------------------------------- M-01/M-04/M-07: the 2026-11-14 review
+
+#[test]
+fn a_contest_does_not_free_the_daily_ceiling() {
+    let (mut c, id) = setup(100, false);
+    let intent = settled_for_contest(&mut c, &id);
+    testing_env!(ctx(OWNER, 0, 130).build());
+    c.contest(
+        id.clone(),
+        intent,
+        "not_delivered".to_string(),
+        "sha256:deadbeef".to_string(),
+    );
+
+    let after = c.get_mandate(id);
+    assert_eq!(after.balance.0, 100, "the money returns to the balance");
+    assert_eq!(
+        after.spent_day.0, 10,
+        "the day's allowance stays spent: a contest must not refill a ceiling"
+    );
+}
+
+#[test]
+fn a_mandate_owner_who_is_not_the_contract_owner_cannot_delete_account_keys() {
+    let (mut c, _) = setup(100, false);
+    // A stranger creates their own mandate. `create_mandate` is permissionless,
+    // so this is the first half of the attack M-01 describes.
+    testing_env!(ctx(AGENT, 100, 100).build());
+    let theirs = c.create_mandate(acc(AGENT), policy(false));
+
+    let key_str = format!("ed25519:{}", "1".repeat(32));
+    let key: PublicKey = key_str.parse().unwrap();
+    testing_env!(ctx(AGENT, 0, 101).build());
+    c.revoke_key(theirs.clone(), key);
+
+    assert!(
+        c.get_mandate(theirs).suspended,
+        "their own mandate is still suspended"
+    );
+    let receipts = near_sdk::test_utils::get_created_receipts();
+    let deleted = receipts.iter().flat_map(|r| r.actions.iter()).any(|a| {
+        matches!(a, near_sdk::mock::MockAction::DeleteKey { .. })
+    });
+    assert!(
+        !deleted,
+        "a mandate owner who is not the contract owner must not delete the account's keys"
+    );
+}
+
+#[test]
+#[should_panic(expected = "PolicyViolation: per_counterparty_day_exceeded")]
+fn approvals_cannot_walk_past_the_counterparty_ceiling() {
+    // Both requests were inside every limit when raised; approving the queue adds
+    // them to the same day and must re-check what the sum now exceeds (M-04).
+    let (mut c, id) = setup(200, false);
+    let a = spend_as(&mut c, &id, 25, att(CHAIN, 25, VENDOR, "a"));
+    let b = spend_as(&mut c, &id, 20, att(CHAIN, 20, VENDOR, "b"));
+
+    testing_env!(ctx(OWNER, 0, 100).build());
+    c.approve(a.request_id.expect("pending has a request id"));
+    testing_env!(ctx(OWNER, 0, 100).build());
+    c.approve(b.request_id.expect("pending has a request id"));
 }

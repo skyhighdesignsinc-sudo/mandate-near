@@ -71,6 +71,7 @@ pub const CODES: &[&str] = &[
     "tx_replayed",
     "balance_reserved",
     "request_pending",
+    "invalid_key",
     "mandate_expired",
     "mandate_suspended",
     "access_key_missing",

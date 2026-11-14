@@ -79,7 +79,18 @@ if (added.failure) {
   console.error(`key-demo: add failed: ${added.failure.code} ${added.failure.detail}`);
   process.exit(3);
 }
-const present = await viewKey();
+// The key list is read from a node that may still be a block behind the receipt
+// we just got, so poll for the state the claim is about instead of sampling once.
+const waitKey = async (want) => {
+  let seen = await viewKey();
+  for (let i = 0; i < 16 && seen !== want; i += 1) {
+    await new Promise((r) => setTimeout(r, 500));
+    seen = await viewKey();
+  }
+  return seen;
+};
+
+const present = await waitKey('present');
 console.log(`after add:    ${present}`);
 
 const revoked = await send([call('revoke_key', { id: target.id, key: publicKeyStr })], 'revoke_key');
@@ -87,14 +98,22 @@ if (revoked.failure) {
   console.error(`key-demo: revoke failed: ${revoked.failure.code} ${revoked.failure.detail}`);
   process.exit(3);
 }
-const afterRevoke = await viewKey();
-const suspended = (await viewCall(account, 'get_mandate', { id: target.id })).suspended;
+const afterRevoke = await waitKey('absent');
+let suspended = (await viewCall(account, 'get_mandate', { id: target.id })).suspended;
+for (let i = 0; i < 16 && !suspended; i += 1) {
+  await new Promise((r) => setTimeout(r, 500));
+  suspended = (await viewCall(account, 'get_mandate', { id: target.id })).suspended;
+}
 console.log(`after revoke: ${afterRevoke}`);
 console.log(`suspended:    ${suspended}`);
 
 await send([call('resume', { id: target.id })], 'resume');
-const afterResume = await viewKey();
-const resumed = (await viewCall(account, 'get_mandate', { id: target.id })).suspended;
+const afterResume = await waitKey('absent');
+let resumed = (await viewCall(account, 'get_mandate', { id: target.id })).suspended;
+for (let i = 0; i < 16 && resumed; i += 1) {
+  await new Promise((r) => setTimeout(r, 500));
+  resumed = (await viewCall(account, 'get_mandate', { id: target.id })).suspended;
+}
 console.log(`after resume: key=${afterResume} suspended=${resumed}`);
 
 const ok = present === 'present' && afterRevoke === 'absent' && suspended === true && afterResume === 'absent' && resumed === false;
